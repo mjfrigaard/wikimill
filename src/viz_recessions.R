@@ -6,7 +6,7 @@ library(forcats)
 
 recessions <- read_csv("data/recessions_clean.csv")
 
-p <- ggplot(recessions, aes(x = fct_reorder(name, start_year), y = gdp_decline_pct, fill = era)) +
+p <- ggplot(recessions, aes(x = fct_reorder(name, gdp_decline_pct), y = gdp_decline_pct, fill = era)) +
   geom_col() +
   coord_flip() +
   scale_fill_manual(values = c(
