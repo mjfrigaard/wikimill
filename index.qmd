@@ -8,4 +8,4 @@ This site scrapes a few of those tables with Python and visualizes them with R a
 
 * [Table sources](table_sources.qmd): Wikipedia pages scraped directly with `pandas.read_html()`, plus the R cleaning steps.
 * [List sources](list_sources.qmd): Wikipedia bulleted lists and categories, scraped through the MediaWiki API, plus the R cleaning steps.
-* [Recessions](viz_recessions.qmd) and [Minimum wage](viz_minimum_wage.qmd): the `ggplot2` visualizations built on the cleaned data.
+* [Recessions](viz_recessions.qmd), [Minimum wage](viz_minimum_wage.qmd), [Dating services](viz_dating.qmd), and [Malls](viz_malls.qmd): the `ggplot2` visualizations built on the cleaned data.

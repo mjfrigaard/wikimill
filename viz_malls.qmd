@@ -1,0 +1,33 @@
+---
+title: "Malls"
+---
+
+How American malls in the defunct category met their end. Data cleaned in [list_sources.qmd](list_sources.qmd); this reads the result and plots it.
+
+```{r}
+#| label: fig-malls
+#| message: false
+#| fig-cap: "American malls, by how they died"
+library(dplyr)
+library(readr)
+library(ggplot2)
+library(forcats)
+
+malls_counts <- read_csv("data/defunct_malls_clean.csv") |>
+  count(status, sort = TRUE)
+
+ggplot(malls_counts, aes(x = fct_reorder(status, n), y = n, fill = status)) +
+  geom_col() +
+  coord_flip() +
+  geom_text(aes(label = n), hjust = -0.2) +
+  scale_fill_manual(values = c(
+    "Demolished" = "#c62828", "Abandoned" = "#f2a71b", "Defunct" = "#2e86c1"
+  )) +
+  scale_y_continuous(expand = expansion(mult = c(0, 0.1))) +
+  labs(
+    x = NULL, y = "Number of malls", fill = "Status",
+    title = "American malls, by how they died"
+  ) +
+  theme_minimal() +
+  theme(legend.position = "none")
+```

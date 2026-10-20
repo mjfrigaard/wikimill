@@ -19,6 +19,7 @@ Wikipedia pages where the data already lives in a clean HTML table. These scrape
 * [List of search engines](https://en.wikipedia.org/wiki/List_of_search_engines): a "Defunct or acquired" table with Name, Backend ownership, and Demise columns. Covers the Ask Jeeves, AltaVista, and Lycos era.
 * [Comparison of cross-platform instant messaging clients](https://en.wikipedia.org/wiki/Comparison_of_cross-platform_instant_messaging_clients): Developer, Initial release, Platform, Latest release, license, monthly active users.
 * [iPod, "Models and features" table](https://en.wikipedia.org/wiki/IPod#Models_and_features): Model, Generation, Capacity, Connection, Original release date, Minimum OS to sync, Rated battery life.
+* [Comparison of online dating services](https://en.wikipedia.org/wiki/Comparison_of_online_dating_services): Name, Owner, Registered users, Free, All features free, Hetero/polyamorous connections, Free messaging, STD-notification.
 
 ```{mermaid}
 %%| eval: true
@@ -84,11 +85,30 @@ wage.to_csv("data/minimum_wage.csv", index=False)
 wage.head()
 ```
 
-These chunks are shown for reference only (`eval: false`), rendering the site doesn't hit Wikipedia. Run `python src/scrape_recessions.py` and `python src/scrape_minimum_wage.py` from the project root to refresh `data/recessions.csv` and `data/minimum_wage.csv`.
+The "Comparison of online dating services" table mixes a registered-user count with a reporting year in one free-text cell, and the "Free" and "All features free" columns hold full sentences rather than a plain Yes/No. We save the raw columns as-is here, the parsing happens in R below.
+
+```{python}
+#| label: scrape-dating
+#| eval: false
+dating_html = requests.get(
+    "https://en.wikipedia.org/wiki/Comparison_of_online_dating_services",
+    headers={"User-Agent": "wikimill-project/0.1"}
+).text
+tables = pd.read_html(io.StringIO(dating_html), match="Registered users")
+dating = tables[0]
+dating.columns = [
+    "name", "description", "owner", "registered_users", "free",
+    "all_features_free", "hetero", "poly", "free_messaging", "std_notification"
+]
+dating.to_csv("data/dating_services.csv", index=False)
+dating.head()
+```
+
+These chunks are shown for reference only (`eval: false`), rendering the site doesn't hit Wikipedia. Run `python src/scrape_recessions.py`, `python src/scrape_minimum_wage.py`, and `python src/scrape_dating.py` from the project root to refresh the raw CSVs in `data/`.
 
 ## Data manipulation in R
 
-The recessions CSV stores its numbers as text. This extracts the start year and the percentages, labels the dot-com, financial crisis, and COVID-19 recessions by era, and keeps recessions since 1945 with a recorded GDP decline.
+The recessions CSV stores its numbers as text. This extracts the start year and the percentages, labels the dot-com, financial crisis, and COVID-19 recessions by era, and keeps recessions since 1945 with a recorded GDP decline. It also tags each recession with the generation that was around 22, typical career-entry age, when it started, using the standard Pew Research birth-year brackets.
 
 ```{r}
 #| label: clean-recessions
@@ -97,6 +117,11 @@ The recessions CSV stores its numbers as text. This extracts the start year and 
 library(dplyr)
 library(readr)
 library(stringr)
+
+generation_levels <- c(
+  "Greatest Generation", "Silent Generation", "Baby Boomers",
+  "Generation X", "Millennials", "Generation Z"
+)
 
 recessions <- read_csv("data/recessions.csv") |>
   mutate(
@@ -108,7 +133,17 @@ recessions <- read_csv("data/recessions.csv") |>
       start_year %in% 2007:2009 ~ "Financial crisis",
       start_year %in% 2020 ~ "COVID-19",
       TRUE ~ "Other"
-    )
+    ),
+    entry_birth_year = start_year - 22L,
+    generation = case_when(
+      entry_birth_year < 1928 ~ "Greatest Generation",
+      entry_birth_year < 1946 ~ "Silent Generation",
+      entry_birth_year < 1965 ~ "Baby Boomers",
+      entry_birth_year < 1981 ~ "Generation X",
+      entry_birth_year < 1997 ~ "Millennials",
+      TRUE ~ "Generation Z"
+    ),
+    generation = factor(generation, levels = generation_levels)
   ) |>
   filter(start_year >= 1945, !is.na(gdp_decline_pct))
 ```
@@ -139,4 +174,30 @@ write_csv(wage_clean, "data/minimum_wage_clean.csv")
 wage_clean
 ```
 
-See [viz_recessions.qmd](viz_recessions.qmd) and [viz_minimum_wage.qmd](viz_minimum_wage.qmd) for the charts built on these.
+The registered-user count and the reporting year are both embedded in one string, like `"30,000,000 as of 2006[2]"`. The user count always has thousands separators, so matching a comma-grouped number pulls it out first; whatever's left over is where the year lives. The "Free" and "All features free" columns are full sentences, we keep the first word (Yes/No/Maybe) as a clean category and leave the original text in place.
+
+```{r}
+#| label: clean-dating
+#| message: false
+#| collapse: true
+dating_clean <- read_csv("data/dating_services.csv") |>
+  mutate(
+    users_raw = str_extract(registered_users, "\\d{1,3}(?:,\\d{3})+"),
+    registered_users_n = as.numeric(str_remove_all(users_raw, ",")),
+    users_year = as.integer(str_extract(str_remove(registered_users, fixed(users_raw)), "\\d{4}")),
+    free_clean = str_extract(free, regex("^(Yes|No|Maybe)", ignore_case = TRUE)),
+    all_features_free_clean = str_extract(all_features_free, regex("^(Yes|No|Maybe)", ignore_case = TRUE))
+  ) |>
+  select(-users_raw) |>
+  filter(!is.na(registered_users_n)) |>
+  distinct(name, .keep_all = TRUE)
+```
+
+```{r}
+#| label: view-dating
+#| collapse: true
+write_csv(dating_clean, "data/dating_services_clean.csv")
+dating_clean
+```
+
+See [viz_recessions.qmd](viz_recessions.qmd), [viz_minimum_wage.qmd](viz_minimum_wage.qmd), and [viz_dating.qmd](viz_dating.qmd) for the charts built on these.

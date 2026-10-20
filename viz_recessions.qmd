@@ -2,29 +2,41 @@
 title: "Recessions"
 ---
 
-The recessions that shaped when millennials entered the job market. Data cleaned in [table_sources.qmd](table_sources.qmd); this reads the result and plots it.
+The recessions that shaped when millennials entered the job market, faceted by the generation that was around 22, typical career-entry age, when each one started. Data cleaned in [table_sources.qmd](table_sources.qmd); this reads the result and plots it.
 
 ```{r}
 #| label: fig-recessions
 #| message: false
-#| fig-cap: "GDP decline by US recession since 1945"
+#| fig-cap: "GDP decline by US recession since 1945, faceted by generation at career-entry age"
+#| fig-height: 7
 library(dplyr)
 library(readr)
 library(ggplot2)
 library(forcats)
 
-recessions <- read_csv("data/recessions_clean.csv")
+recessions <- read_csv("data/recessions_clean.csv") |>
+  mutate(generation = factor(generation, levels = c(
+    "Greatest Generation", "Silent Generation", "Baby Boomers",
+    "Generation X", "Millennials", "Generation Z"
+  )))
 
-ggplot(recessions, aes(x = fct_reorder(name, gdp_decline_pct), y = gdp_decline_pct, fill = era)) +
+ggplot(recessions, 
+  aes(
+    x = fct_reorder(name, gdp_decline_pct), 
+    y = gdp_decline_pct, fill = era)) +
   geom_col() +
   coord_flip() +
+  # facet_wrap(~ generation, scales = "free_y") +
   scale_fill_manual(values = c(
     "Dot-com bust" = "#d62728", "Financial crisis" = "#1f77b4",
     "COVID-19" = "#2ca02c", "Other" = "grey70"
   )) +
   labs(
-    x = NULL, y = "GDP decline, peak to trough (%)", fill = "Era",
-    title = "The recessions that shaped millennial entry into the job market"
+    x = NULL, 
+    y = "GDP decline, peak to trough (%)", 
+    fill = "Era",
+    title = "The recessions that shaped each generation's entry into the job market"
   ) +
-  theme_minimal()
+  theme_minimal() +
+  theme(strip.text = element_text(face = "bold"))
 ```
