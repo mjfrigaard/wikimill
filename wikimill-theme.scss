@@ -1,0 +1,63 @@
+/*-- scss:defaults --*/
+
+// Mallrats poster palette: red band, sky blue, mall blue, spiral orange, lime title
+$mallrats-red: #c62828 !default;
+$mallrats-sky: #eaf6fb !default;
+$mallrats-blue: #2e86c1 !default;
+$mallrats-orange: #f2a71b !default;
+$mallrats-lime: #8dc63f !default;
+$mallrats-ink: #1a1a2e !default;
+
+$primary: $mallrats-lime !default;
+$secondary: $mallrats-orange !default;
+$body-bg: $mallrats-sky !default;
+$body-color: $mallrats-ink !default;
+$link-color: $mallrats-blue !default;
+
+$font-family-sans-serif: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif !default;
+$headings-font-family: "Poppins", sans-serif !default;
+$headings-font-weight: 700 !default;
+$headings-color: $mallrats-ink !default;
+
+$navbar-bg: $mallrats-red !default;
+$navbar-fg: $mallrats-sky !default;
+$navbar-hl: $mallrats-lime !default;
+
+$code-color: $mallrats-blue !default;
+$code-bg: #fdf1dc !default;
+
+/*-- scss:rules --*/
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@600;700&family=Nunito:wght@400;600;700&display=swap');
+
+.navbar-title {
+  font-family: $headings-font-family;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+h1, h2, h3, h4 {
+  font-family: $headings-font-family;
+  color: $mallrats-ink;
+}
+
+h2 {
+  border-bottom: 3px solid $mallrats-orange;
+  padding-bottom: 0.3rem;
+}
+
+a {
+  text-decoration-color: $mallrats-orange;
+}
+
+code {
+  border-radius: 4px;
+}
+
+.sidebar-title, .nav-link {
+  font-family: $headings-font-family;
+}
+
+li::marker {
+  color: $mallrats-blue;
+}

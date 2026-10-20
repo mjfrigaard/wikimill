@@ -93,6 +93,7 @@ The recessions CSV stores its numbers as text. This extracts the start year and 
 ```{r}
 #| label: clean-recessions
 #| message: false
+#| collapse: true
 library(dplyr)
 library(readr)
 library(stringr)
@@ -110,7 +111,11 @@ recessions <- read_csv("data/recessions.csv") |>
     )
   ) |>
   filter(start_year >= 1945, !is.na(gdp_decline_pct))
+```
 
+```{r}
+#| label: view-recessions
+#| collapse: true
 write_csv(recessions, "data/recessions_clean.csv")
 recessions
 ```
@@ -119,12 +124,17 @@ For the minimum wage data, this keeps the country and nominal annual wage column
 
 ```{r}
 #| label: clean-minimum-wage
+#| collapse: true
 wage_clean <- read_csv("data/minimum_wage.csv") |>
   select(matches("Country"), matches("Annual_Nominal")) |>
   rename(country = 1, annual_wage_usd = 2) |>
   mutate(annual_wage_usd = as.double(annual_wage_usd)) |>
   filter(!is.na(annual_wage_usd))
+```
 
+```{r}
+#| label: view-minimum-wage
+#| collapse: true
 write_csv(wage_clean, "data/minimum_wage_clean.csv")
 wage_clean
 ```

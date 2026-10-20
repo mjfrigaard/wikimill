@@ -1,6 +1,9 @@
 project:
   type: website
 
+execute:
+  freeze: auto
+
 website:
   title: "wikimill"
   navbar:
@@ -21,9 +24,11 @@ format:
   html:
     theme:
       - cosmo
+      - wikimill-theme.scss
       - brand
     css: styles.css
     toc: true
+    collapse: true
 
 
 
