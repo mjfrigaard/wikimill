@@ -1,0 +1,9 @@
+---
+title: "About"
+---
+
+wikimill is a small data visualization project built on Wikipedia's "List of" pages and categories.
+
+Python (`pandas`, `requests`) scrapes each page, and R (`dplyr`, `ggplot2`) cleans and visualizes the results. Quarto uses `reticulate` to run both languages in the same document. Scraped tables are cached as CSVs in `data/`, so rendering the site doesn't depend on Wikipedia being reachable.
+
+Source: [github.com/mjfrigaard/wikimill](https://github.com/mjfrigaard/wikimill)

@@ -1,0 +1,29 @@
+project:
+  type: website
+
+website:
+  title: "wikimill"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - text: Sources
+        menu:
+          - table_sources.qmd
+          - list_sources.qmd
+      - text: Visualizations
+        menu:
+          - viz_recessions.qmd
+          - viz_minimum_wage.qmd
+      - about.qmd
+
+format:
+  html:
+    theme:
+      - cosmo
+      - brand
+    css: styles.css
+    toc: true
+
+
+

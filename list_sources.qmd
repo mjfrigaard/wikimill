@@ -1,0 +1,103 @@
+---
+title: "List sources"
+---
+
+```{r setup}
+#| include: false
+library(reticulate)
+```
+
+Wikipedia pages where the data is a bulleted list or a category rather than a table. These need a different scraping method than `pandas.read_html()`.
+
+* [Category:Defunct shopping malls in the United States](https://en.wikipedia.org/wiki/Category:Defunct_shopping_malls_in_the_United_States): no "List of" article exists for closed malls, so this category is the closest substitute, with [Demolished](https://en.wikipedia.org/wiki/Category:Demolished_shopping_malls_in_the_United_States) and [Abandoned](https://en.wikipedia.org/wiki/Category:Abandoned_shopping_malls_in_the_United_States) subcategories.
+* [List of defunct department stores of the United States](https://en.wikipedia.org/wiki/List_of_defunct_department_stores_of_the_United_States): bulleted by state, with store name, location, and closure notes. The entries need manual structuring into columns.
+* [Timeline of malware](https://en.wikipedia.org/wiki/Timeline_of_malware): a chronological bulleted list grouped by decade, then year. Covers ILOVEYOU, Melissa, and Code Red.
+* [List of companies affected by the dot-com bubble](https://en.wikipedia.org/wiki/List_of_companies_affected_by_the_dot-com_bubble): a bulleted list of companies, each with a prose description of its IPO, stock performance, or collapse.
+
+```{mermaid}
+%%| eval: true
+%%| fig-width: 7
+%%| fig-height: 3
+%%| fig-align: 'center'
+%%| fig-caption: 'List and category scraping method'
+%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
+
+flowchart TB
+    cat(["<strong>Wikipedia category</strong><br/>page links, no table"]) -->|"i. Query"| api["MediaWiki API<br/><code>list=categorymembers</code>"]
+    api -->|"ii. Paginate"| json["JSON response<br/><code>cmcontinue</code>"]
+    json -->|"iii. Save raw"| csv[("<code>data/*.csv</code>")]
+    csv -->|"iv. Dedupe + label"| clean["<code>dplyr</code> dedupe + count"]
+    clean -->|"v. Save clean"| cleancsv[("<code>data/*_clean.csv</code>")]
+
+    style cat fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style api fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style json fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style csv fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style clean fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style cleancsv fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+```
+
+## Scraping method
+
+A Wikipedia category has no table, it is just a list of page links, so `pandas.read_html()` has nothing to parse. The MediaWiki API's `categorymembers` endpoint returns the same list as structured JSON instead, and handles pagination with a `cmcontinue` token for categories over 500 members.
+
+This fetches the defunct malls category and its two subcategories, and labels each page with the category it came from.
+
+```{python}
+#| label: scrape-malls
+#| eval: false
+import pandas as pd
+import requests
+
+API = "https://en.wikipedia.org/w/api.php"
+
+def fetch_category_members(category):
+    params = {
+        "action": "query", "list": "categorymembers",
+        "cmtitle": f"Category:{category}", "cmlimit": 500,
+        "format": "json"
+    }
+    members = []
+    while True:
+        resp = requests.get(API, params=params, headers={"User-Agent": "wikimill-project/0.1"}).json()
+        members.extend(resp["query"]["categorymembers"])
+        if "continue" not in resp:
+            break
+        params["cmcontinue"] = resp["continue"]["cmcontinue"]
+    return pd.DataFrame(members)[["title"]]
+
+categories = {
+    "Defunct_shopping_malls_in_the_United_States": "Defunct",
+    "Demolished_shopping_malls_in_the_United_States": "Demolished",
+    "Abandoned_shopping_malls_in_the_United_States": "Abandoned",
+}
+malls = pd.concat(
+    [fetch_category_members(cat).assign(status=label) for cat, label in categories.items()],
+    ignore_index=True
+)
+malls.to_csv("data/defunct_malls.csv", index=False)
+malls.head()
+```
+
+This chunk is shown for reference only (`eval: false`), rendering the site doesn't hit Wikipedia. Run `python src/scrape_malls.py` from the project root to refresh `data/defunct_malls.csv`.
+
+## Data manipulation in R
+
+A mall in the "Demolished" or "Abandoned" subcategory is also a member of the parent "Defunct" category, so each title can appear more than once. This keeps the most specific status per mall and counts how many fall into each one.
+
+```{r}
+#| label: clean-malls
+#| message: false
+library(dplyr)
+library(readr)
+library(forcats)
+
+malls_clean <- read_csv("data/defunct_malls.csv") |>
+  mutate(status = factor(status, levels = c("Demolished", "Abandoned", "Defunct"))) |>
+  arrange(status) |>
+  distinct(title, .keep_all = TRUE)
+
+write_csv(malls_clean, "data/defunct_malls_clean.csv")
+
+malls_clean |> count(status, sort = TRUE)
+```

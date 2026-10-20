@@ -1,0 +1,132 @@
+---
+title: "Table sources"
+---
+
+```{r setup}
+#| include: false
+library(reticulate)
+```
+
+Wikipedia pages where the data already lives in a clean HTML table. These scrape directly with `pandas.read_html()`, no text parsing required.
+
+* [List of social networking services](https://en.wikipedia.org/wiki/List_of_social_networking_services): name, type, focus/audience.
+* [List of defunct social networking services](https://en.wikipedia.org/wiki/List_of_defunct_social_networking_services): name, type, focus. Covers the platforms this generation grew up on and lost (Myspace, Vine, AIM).
+* [List of recessions in the United States](https://en.wikipedia.org/wiki/List_of_recessions_in_the_United_States): name, period, duration, peak unemployment, GDP decline. Spans the dot-com bust and the 2008 financial crisis.
+* [List of cryptocurrencies](https://en.wikipedia.org/wiki/List_of_cryptocurrencies): year introduced, currency, founder, consensus mechanism.
+* [List of countries by minimum wage](https://en.wikipedia.org/wiki/List_of_countries_by_minimum_wage): country, nominal and PPP (purchasing power parity) annual/hourly wage, percent of GDP per capita.
+* [List of Disney Channel original films](https://en.wikipedia.org/wiki/List_of_Disney_Channel_Original_Movies): year, film, premiere date, US viewership in millions.
+* [History of the web browser](https://en.wikipedia.org/wiki/History_of_the_web_browser): a "Historical web browsers" table with Browser, Years, and per-OS support columns.
+* [List of search engines](https://en.wikipedia.org/wiki/List_of_search_engines): a "Defunct or acquired" table with Name, Backend ownership, and Demise columns. Covers the Ask Jeeves, AltaVista, and Lycos era.
+* [Comparison of cross-platform instant messaging clients](https://en.wikipedia.org/wiki/Comparison_of_cross-platform_instant_messaging_clients): Developer, Initial release, Platform, Latest release, license, monthly active users.
+* [iPod, "Models and features" table](https://en.wikipedia.org/wiki/IPod#Models_and_features): Model, Generation, Capacity, Connection, Original release date, Minimum OS to sync, Rated battery life.
+
+```{mermaid}
+%%| eval: true
+%%| fig-width: 7
+%%| fig-height: 3
+%%| fig-align: 'center'
+%%| fig-caption: 'Table scraping method'
+%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
+
+flowchart TB
+    wiki(["<strong>Wikipedia page</strong><br/>HTML table"]) -->|"i. Request"| scrape["<code>requests</code> + <code>pandas.read_html()</code>"]
+    scrape -->|"ii. Save raw"| csv[("<code>data/*.csv</code>")]
+    csv -->|"iii. Clean"| clean["<code>dplyr</code> clean + reshape"]
+    clean -->|"iv. Save clean"| cleancsv[("<code>data/*_clean.csv</code>")]
+
+    style wiki fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style scrape fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style csv fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style clean fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style cleancsv fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+```
+
+## Scraping method
+
+Two examples below. Both fetch the raw page with `requests`, then hand the HTML to `pandas.read_html()`, which finds every table on the page and returns each as a DataFrame. Passing `match=` picks out the one table we want by a string that appears in its header.
+
+The "List of recessions in the United States" table has a flat header, so renaming the columns is enough.
+
+```{python}
+#| label: scrape-recessions
+#| eval: false
+import io
+import pandas as pd
+import requests
+
+url = "https://en.wikipedia.org/wiki/List_of_recessions_in_the_United_States"
+html = requests.get(url, headers={"User-Agent": "wikimill-project/0.1"}).text
+
+tables = pd.read_html(io.StringIO(html), match="GDP decline")
+recessions = tables[0]
+recessions.columns = [
+    "name", "period_range", "duration", "time_since_previous",
+    "peak_unemployment", "gdp_decline", "characteristics"
+]
+recessions.to_csv("data/recessions.csv", index=False)
+recessions.head()
+```
+
+The "List of countries by minimum wage" table has a nested header: the annual and hourly figures are each split into nominal and PPP sub-columns. `pandas` reads this as a `MultiIndex`, so we flatten it into single column names before saving.
+
+```{python}
+#| label: scrape-minimum-wage
+#| eval: false
+wage_html = requests.get(
+    "https://en.wikipedia.org/wiki/List_of_countries_by_minimum_wage",
+    headers={"User-Agent": "wikimill-project/0.1"}
+).text
+tables = pd.read_html(io.StringIO(wage_html), match="Minimum wage")
+wage = tables[0]
+wage.columns = ["_".join(c for c in col if "Unnamed" not in c).strip("_")
+                for col in wage.columns.to_flat_index()]
+wage.to_csv("data/minimum_wage.csv", index=False)
+wage.head()
+```
+
+These chunks are shown for reference only (`eval: false`), rendering the site doesn't hit Wikipedia. Run `python src/scrape_recessions.py` and `python src/scrape_minimum_wage.py` from the project root to refresh `data/recessions.csv` and `data/minimum_wage.csv`.
+
+## Data manipulation in R
+
+The recessions CSV stores its numbers as text. This extracts the start year and the percentages, labels the dot-com, financial crisis, and COVID-19 recessions by era, and keeps recessions since 1945 with a recorded GDP decline.
+
+```{r}
+#| label: clean-recessions
+#| message: false
+library(dplyr)
+library(readr)
+library(stringr)
+
+recessions <- read_csv("data/recessions.csv") |>
+  mutate(
+    start_year = as.integer(str_extract(period_range, "\\d{4}")),
+    gdp_decline_pct = as.numeric(str_extract(gdp_decline, "[\\d.]+")),
+    peak_unemployment_pct = as.numeric(str_extract(peak_unemployment, "[\\d.]+")),
+    era = case_when(
+      start_year %in% 2001 ~ "Dot-com bust",
+      start_year %in% 2007:2009 ~ "Financial crisis",
+      start_year %in% 2020 ~ "COVID-19",
+      TRUE ~ "Other"
+    )
+  ) |>
+  filter(start_year >= 1945, !is.na(gdp_decline_pct))
+
+write_csv(recessions, "data/recessions_clean.csv")
+recessions
+```
+
+For the minimum wage data, this keeps the country and nominal annual wage columns and drops rows with no wage on record.
+
+```{r}
+#| label: clean-minimum-wage
+wage_clean <- read_csv("data/minimum_wage.csv") |>
+  select(matches("Country"), matches("Annual_Nominal")) |>
+  rename(country = 1, annual_wage_usd = 2) |>
+  mutate(annual_wage_usd = as.double(annual_wage_usd)) |>
+  filter(!is.na(annual_wage_usd))
+
+write_csv(wage_clean, "data/minimum_wage_clean.csv")
+wage_clean
+```
+
+See [viz_recessions.qmd](viz_recessions.qmd) and [viz_minimum_wage.qmd](viz_minimum_wage.qmd) for the charts built on these.
