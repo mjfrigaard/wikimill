@@ -4,6 +4,30 @@ title: "Clean: dating services"
 
 In the CSV from [scrape_dating.qmd](scrape_dating.qmd), the registered-user count and the reporting year are both embedded in one string, like `"30,000,000 as of 2006[2]"`. The user count always has thousands separators, so matching a comma-grouped number pulls it out first; whatever's left over is where the year lives. The "Free" and "All features free" columns are full sentences; we keep the first word (Yes/No/Maybe) as a clean category and leave the original text in place.
 
+```{mermaid}
+%%| eval: true
+%%| fig-width: 7
+%%| fig-height: 6
+%%| fig-align: 'center'
+%%| fig-caption: 'Dating services cleaning steps'
+%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
+
+flowchart TB
+
+    raw[("<code>data/dating_services.csv</code>")] -->|"i. Extract"| users["User count<br/>from <code>registered_users</code>"]
+    users -->|"ii. Extract"| year["Year from<br/>the leftover text"]
+    year -->|"iii. Categorize"| free["Yes/No/Maybe from<br/><code>free</code> columns"]
+    free -->|"iv. Filter"| filt["Drop missing counts<br/>and duplicate names"]
+    filt -->|"v. Save"| clean[("<code>data/dating_services_clean.csv</code>")]
+
+    style raw fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style clean fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style users fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style year fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style free fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style filt fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+```
+
 ```{r}
 #| label: clean-dating
 #| message: false

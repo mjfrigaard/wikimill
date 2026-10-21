@@ -4,6 +4,28 @@ title: "Clean: minimum wage"
 
 The minimum wage CSV from [scrape_minimum_wage.qmd](scrape_minimum_wage.qmd) has more columns than the chart needs. The code below keeps the country and nominal annual wage columns and drops rows with no wage on record.
 
+```{mermaid}
+%%| eval: true
+%%| fig-width: 7
+%%| fig-height: 5
+%%| fig-align: 'center'
+%%| fig-caption: 'Minimum wage cleaning steps'
+%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
+
+flowchart TB
+
+    raw[("<code>data/minimum_wage.csv</code>")] -->|"i. Select"| sel["Country and<br/>nominal annual wage"]
+    sel -->|"ii. Rename"| ren["<code>country</code>, <code>annual_wage_usd</code>"]
+    ren -->|"iii. Filter"| filt["Drop rows<br/>with no wage"]
+    filt -->|"iv. Save"| clean[("<code>data/minimum_wage_clean.csv</code>")]
+
+    style raw fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style clean fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style sel fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style ren fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style filt fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+```
+
 ```{r}
 #| label: clean-minimum-wage
 #| message: false

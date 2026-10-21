@@ -31,6 +31,34 @@ The Wikipedia names mostly repeat the dates ("Recession of 1960–1961"), so we 
 * Subprime (2007): the subprime mortgage crisis and housing bubble collapse.
 * Pandemic (2020): the COVID-19 pandemic.
 
+```{mermaid}
+%%| eval: true
+%%| fig-width: 7
+%%| fig-height: 8
+%%| fig-align: 'center'
+%%| fig-caption: 'Recessions cleaning steps'
+%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
+
+flowchart TB
+
+    raw[("<code>data/recessions.csv</code>")] -->|"i. Parse"| dates["<code>start_date</code>, <code>end_date</code><br/>from <code>period_range</code>"]
+    dates -->|"ii. Rename"| names["One-word <code>name</code><br/>and <code>label</code>"]
+    names -->|"iii. Extract"| pct["GDP decline, unemployment,<br/>and <code>era</code>"]
+    pct -->|"iv. Filter"| filt["Since 1945 with<br/>a GDP decline"]
+    gen{{"Generations table<br/>birth years + 22"}} -->|"v. Overlap join"| join["Recession matched to<br/>generation entry window"]
+    filt -->|"v. Overlap join"| join
+    join -->|"vi. Save"| clean[("<code>data/recessions_clean.csv</code>")]
+
+    style raw fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style clean fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style gen fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style dates fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style names fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style pct fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style filt fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style join fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+```
+
 ```{r}
 #| label: clean-recessions
 #| message: false

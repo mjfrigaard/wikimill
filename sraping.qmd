@@ -1,6 +1,0 @@
----
-title: "Scraping Wikipedia"
-engine: knitr
----
-
-Wikipedia is a free resource for anyone with an internet connection. 

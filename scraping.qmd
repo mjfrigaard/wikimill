@@ -1,0 +1,166 @@
+---
+title: "Scraping overview"
+engine: knitr
+---
+
+Before scraping a website, check what you're allowed to collect, how fast you can collect it, and whether the site offers a better way to get the data. Wikipedia is one of the better cases: its content is openly licensed, and the Wikimedia Foundation actively supports reuse. Still, "allowed" doesn't mean "anything goes." This page covers the rules and practices behind the scraping code on this site, and each `scrape_*.qmd` page applies them to one topic.
+
+## What the law and the licenses allow
+
+Being able to download a page doesn't make scraping it acceptable, so start with the license. Wikipedia text is released under the [Creative Commons Attribution-ShareAlike 4.0 license](https://en.wikipedia.org/wiki/Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License) (CC BY-SA 4.0), and older content is also covered by the GNU Free Documentation License (GFDL). Both let you copy, redistribute, and modify the text, as long as you meet two conditions:
+
+* Attribution: credit the article and link back to it. The page history lists its contributors.
+* Share alike: release any derivative work under the same license.
+
+Each sources page on this site links to the article it scraped. Images and other media carry their own licenses, so check each file on Wikimedia Commons before reusing it.
+
+Wikimedia's [Terms of Use](https://foundation.wikimedia.org/wiki/Policy:Terms_of_Use) explicitly permit reuse under these licenses. What they prohibit is disrupting the service: you can't use automated tools in ways that harm the servers or place an undue burden on them.
+
+Other sites are less clear-cut, and the law depends on where you are. In the US, hiQ v. LinkedIn suggested that scraping publicly accessible data doesn't violate the Computer Fraud and Abuse Act (CFAA). That ruling isn't a blanket permission, though. Breaching Terms of Service you agreed to, circumventing access controls, or republishing copyrighted content can still create liability. In the EU, the General Data Protection Regulation (GDPR) applies to personal data no matter how you obtained it, and the Database Directive protects some compiled datasets. Laws vary, so when in doubt, consult a lawyer for commercial projects.
+
+## Wikimedia's rules for automated clients
+
+Beyond the license, Wikimedia sets rules for how programs reach its servers. The first is the simplest: don't bulk-crawl the HTML pages. Wikipedia's own documentation says, "Please do not use a web crawler to download large numbers of articles." The data sources in the next section exist so you don't have to.
+
+Every request should also identify who sent it. Wikimedia's [User-Agent policy](https://foundation.wikimedia.org/wiki/Policy:User-Agent_policy) makes a descriptive `User-Agent` header a hard requirement: it should name your tool and include contact information, such as `MyResearchBot/1.0 (https://example.org/bot; me@example.org)`. Generic agents (like the `requests` default) and agents that impersonate a browser may be blocked. An honest agent works in your favor, too, because it lets site operators reach you instead of simply blocking you.
+
+Finally, honor `robots.txt`. A site's `robots.txt` file (e.g., <https://en.wikipedia.org/robots.txt>) lists the paths automated clients should stay away from. On Wikipedia, article pages under `/wiki/` are open, but `/w/`, `Special:` pages, edit and history views, and certain namespaces are disallowed. Neither `robots.txt` nor a site's Terms of Use is legally binding everywhere, but respect both anyway; they signal what the owner wants.
+
+## Where to get Wikipedia data
+
+Parsing HTML is fragile, because a layout change can break a scraper without any warning. When an API or dump exists, scraping HTML is also discourteous. Wikimedia offers several official channels, listed below roughly in order of preference:
+
+1. Database dumps (`dumps.wikimedia.org`): full XML and SQL exports of every project, updated twice monthly. Dumps are the best choice for anything large scale, such as NLP corpora, link graphs, or full-text analysis.
+2. Wikidata: structured data (entities and properties) available through dumps, the SPARQL endpoint (`query.wikidata.org`), or its own API. Wikidata is often what people actually want when they scrape infoboxes.
+3. [MediaWiki Action API](https://www.mediawiki.org/wiki/API:Main_page) (`/w/api.php`): flexible queries of pages, revisions, categories, links, search, and more, returned as structured JSON.
+4. REST API (`/api/rest_v1/`): simplified endpoints for page summaries, HTML, mobile sections, and similar content.
+5. Wikimedia Enterprise: a commercial, SLA-backed API for high-volume users, with a free tier available.
+6. Analytics APIs (`wikimedia.org/api/rest_v1/metrics/`): pageviews, edit counts, and other usage metrics.
+7. Scraping HTML: a last resort, only for small, targeted needs.
+
+You don't have to build the plumbing for these yourself. Libraries like `pywikibot`, `mwclient`, and `wikipedia-api` handle much of the work, and `mwparserfromhell` parses wikitext.
+
+```{mermaid}
+%%| eval: true
+%%| fig-width: 7
+%%| fig-height: 7
+%%| fig-align: 'center'
+%%| fig-caption: 'Choosing a Wikipedia data source'
+%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
+
+flowchart TB
+    start(["<strong>What data do you need?</strong>"]) --> bulk{"Large scale?<br/>corpora, link graphs"}
+    bulk -->|"i. Yes"| dumps[("Database dumps<br/><code>dumps.wikimedia.org</code>")]
+    bulk -->|"No"| facts{"Structured facts?<br/>infobox values"}
+    facts -->|"ii. Yes"| wikidata[("Wikidata<br/>SPARQL or API")]
+    facts -->|"No"| pages{"Pages, categories,<br/>or links?"}
+    pages -->|"iii. Yes"| api["Action API or REST API<br/><code>categorymembers</code>"]
+    pages -->|"No"| table{"One clean<br/>HTML table?"}
+    table -->|"iv. Yes"| html["<code>pandas.read_html()</code><br/>small and targeted"]
+
+    style start fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style bulk fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style facts fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style pages fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style table fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style dumps fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style wikidata fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style api fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style html fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+```
+
+## How this site collects data
+
+The pages on this site need a handful of tables and lists, not whole corpora, so they rely on two lightweight methods:
+
+* `pandas.read_html()`: used for pages where the data already sits in a clean HTML table (see [Table sources](table_sources.qmd)). This is the small, targeted HTML scraping at the bottom of the list above. It's fast and needs very little code, but it depends on the table's header names, so a scraper should match on a distinctive column (`match="GDP decline"`) instead of the table's position on the page.
+* The Action API's `categorymembers` endpoint: used for categories and lists that have no table to parse (see [List sources](list_sources.qmd)).
+
+API results come back in pages. When there are more results than `cmlimit` allows, the response includes a `continue` block, and you pass its `cmcontinue` value with the next request. The loop below collects every member of a category this way:
+
+```{python}
+#| label: api-pagination
+#| eval: false
+import requests
+
+API = "https://en.wikipedia.org/w/api.php"
+params = {
+    "action": "query", "list": "categorymembers",
+    "cmtitle": "Category:Defunct_shopping_malls_in_the_United_States",
+    "cmlimit": 500, "format": "json"
+}
+members = []
+while True:
+    resp = requests.get(API, params=params, headers={"User-Agent": "wikimill-project/0.1"}).json()
+    members.extend(resp["query"]["categorymembers"])
+    if "continue" not in resp:
+        break
+    params["cmcontinue"] = resp["continue"]["cmcontinue"]
+```
+
+## Making polite requests
+
+Wikipedia publishes no hard rate limit for reads, so pacing is largely up to you. About one request per second (or a similarly modest sustained rate) is considered polite. The REST API documents 200 requests per second as its absolute ceiling, and you should never approach it. The practical test is simple: would a human operator be annoyed if they noticed your traffic?
+
+A few habits keep your traffic well below that line:
+
+* Go serially: make requests one at a time instead of in parallel, and pause between them when you're looping over many pages.
+* Use `maxlag`: a parameter like `maxlag=5` makes your requests back off automatically when the database replicas lag.
+* Batch requests: combine titles in one call (e.g., `titles=A|B|C`) for up to 50 pages per request.
+* Back off on errors: when the server returns a 429 or 503, retry with exponential backoff and respect any `Retry-After` header.
+
+```{mermaid}
+%%| eval: true
+%%| fig-width: 7
+%%| fig-height: 7
+%%| fig-align: 'center'
+%%| fig-caption: 'A polite request loop'
+%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
+
+flowchart TB
+    send["Send one request<br/><code>User-Agent</code> + <code>maxlag</code>"] --> status{"Response<br/>status?"}
+    status -->|"i. 200"| save[("Save to disk<br/>with retrieval date")]
+    status -->|"ii. 429 or 503"| wait["Wait for <code>Retry-After</code><br/>or back off exponentially"]
+    wait --> send
+    save --> more{"More pages?"}
+    more -->|"iii. Yes"| pause["Pause about<br/>one second"]
+    pause --> send
+    more -->|"iv. No"| done(["<strong>Done</strong><br/>work from the cache"])
+
+    style send fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style status fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style save fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style wait fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style more fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style pause fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style done fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+```
+
+## Caching and provenance
+
+The most polite request is the one you never send. Save what you scrape to disk and work from the saved copy. Use `If-Modified-Since` or `ETag` headers to skip pages that haven't changed, and don't rerun a full crawl to pick up small edits.
+
+This site follows the same rule. Every `scrape_*.qmd` chunk is set to `eval: false`, and the cleaning and visualization pages read the CSVs in `data/`, so rendering the site never sends a request to Wikipedia. Each scraped table is also written to disk before it's cleaned (`recessions.csv`, then `recessions_clean.csv`). If a cleaning step goes wrong, you can rerun it without scraping again.
+
+A cached copy has one drawback: Wikipedia articles change constantly, and the live page may no longer match what you saved. Store the retrieval date (or dump date) and the revision IDs alongside your data, and state that provenance plainly in research and products. When you refresh the data, recheck the scraper's output, because an edit can move or rename the table you depend on.
+
+## What the rules don't cover
+
+A license tells you what you can republish, but it doesn't tell you what's fair to collect. Personal data is the clearest example. Even on public sites, aggregating personal information can cause privacy harms and create legal exposure. The topics on this site are aggregate (recessions, wages, platforms, malls), but scraping pages about people raises privacy questions that a license doesn't answer.
+
+On Wikipedia, biographies of living persons are a sensitive area. Editor data (usernames, edit histories, and talk pages) is public, but it shouldn't be repurposed for profiling or harassment.
+
+Access controls are the other boundary. Don't circumvent logins, paywalls, CAPTCHAs, or IP blocks. Working around a block means ignoring a site that has already told you no.
+
+## Checklist for a Wikipedia project
+
+1. Ask whether a dump or Wikidata already contains what you need. It usually does.
+2. If you use the API, set a proper `User-Agent`, use `maxlag`, batch requests, go serially, and handle errors gracefully.
+3. If you must scrape HTML, keep it small, honor `robots.txt`, throttle to about one request per second or slower, and cache aggressively.
+4. Store the retrieval date and revision IDs alongside your data.
+5. Attribute properly under CC BY-SA in whatever you publish.
+6. For heavy or commercial use, look at Wikimedia Enterprise or consider donating to the Foundation. The infrastructure you're using is donor-funded.
+
+## Recap
+
+Wikipedia wants people to use its data; the job is to use the doors it built (dumps, APIs, and Wikidata) rather than climbing through the window. Check the license and Terms of Use, identify yourself, request slowly, and cache what you collect along with its retrieval date and revision IDs. This site follows those rules with two lightweight methods, `pandas.read_html()` for clean tables and the `categorymembers` endpoint for lists, and it never contacts Wikipedia during a render.

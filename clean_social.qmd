@@ -4,6 +4,30 @@ title: "Clean: social platforms"
 
 The social platforms CSV from [scrape_social.qmd](scrape_social.qmd) stores monthly active users as text like `"3.070 billion[1][2][3]"` or `"930 million"`. The code below pulls out the number and the unit separately and converts everything to millions. It also collapses the long tail of owning companies down to the five with more than one platform in the table (Meta Platforms, Tencent, ByteDance, Microsoft, and Alphabet) and labels everyone else `"Other"`.
 
+```{mermaid}
+%%| eval: true
+%%| fig-width: 7
+%%| fig-height: 5
+%%| fig-align: 'center'
+%%| fig-caption: 'Social platforms cleaning steps'
+%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
+
+flowchart TB
+
+    raw[("<code>data/social_platforms.csv</code>")] -->|"i. Extract"| ext["Number and unit from<br/><code>monthly_active_users</code>"]
+    ext -->|"ii. Convert"| mau["<code>mau_millions</code>"]
+    mau -->|"iii. Group"| grp["<code>company_group</code><br/>top five or Other"]
+    grp -->|"iv. Filter"| filt["Drop helper columns<br/>and missing counts"]
+    filt -->|"v. Save"| clean[("<code>data/social_platforms_clean.csv</code>")]
+
+    style raw fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style clean fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style ext fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style mau fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style grp fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style filt fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+```
+
 ```{r}
 #| label: clean-social
 #| message: false

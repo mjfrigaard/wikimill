@@ -4,6 +4,28 @@ title: "Clean: malls"
 
 A mall in the "Demolished" or "Abandoned" subcategory from [scrape_malls.qmd](scrape_malls.qmd) is also a member of the parent "Defunct" category, so each title can appear more than once. The code below keeps the most specific status for each mall and counts how many malls fall into each one.
 
+```{mermaid}
+%%| eval: true
+%%| fig-width: 7
+%%| fig-height: 5
+%%| fig-align: 'center'
+%%| fig-caption: 'Malls cleaning steps'
+%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
+
+flowchart TB
+
+    raw[("<code>data/defunct_malls.csv</code>")] -->|"i. Order"| status["<code>status</code> factor<br/>Demolished, Abandoned, Defunct"]
+    status -->|"ii. Sort"| arr["Most specific<br/>status first"]
+    arr -->|"iii. Deduplicate"| dist["One row per <code>title</code>"]
+    dist -->|"iv. Save"| clean[("<code>data/defunct_malls_clean.csv</code>")]
+
+    style raw fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style clean fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+    style status fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style arr fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+    style dist fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
+```
+
 ```{r}
 #| label: clean-malls
 #| message: false
