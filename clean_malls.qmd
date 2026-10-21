@@ -26,6 +26,10 @@ flowchart TB
     style dist fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
 ```
 
+::: {.panel-tabset group="language"}
+
+## R
+
 ```{r}
 #| label: clean-malls
 #| message: false
@@ -41,5 +45,31 @@ write_csv(malls_clean, "data/defunct_malls_clean.csv")
 
 malls_clean |> count(status, sort = TRUE)
 ```
+
+## Python
+
+```{python}
+#| label: clean-malls-py
+import pandas as pd
+
+malls = pd.read_csv("data/defunct_malls.csv")
+malls["status"] = pd.Categorical(
+    malls["status"], categories=["Demolished", "Abandoned", "Defunct"], ordered=True
+)
+malls_clean = (
+    malls.sort_values("status", kind="stable")
+    .drop_duplicates(subset="title")
+)
+malls_clean.to_csv("data/defunct_malls_clean.csv", index=False)
+malls_clean["status"].value_counts()
+```
+
+:::
+
+::: {.callout-note}
+## Either works
+
+An ordered factor in R and an ordered `Categorical` in `pandas` both sort the statuses by specificity. `arrange()` is always stable; in `pandas`, `sort_values()` needs `kind="stable"` so ties keep their original order before `drop_duplicates()`.
+:::
 
 See [viz_malls.qmd](viz_malls.qmd) for the chart built on this.

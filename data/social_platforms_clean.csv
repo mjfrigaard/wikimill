@@ -1,37 +1,37 @@
 name,company,country,launched,monthly_active_users,other_metrics,mau_millions,company_group
-Facebook,Meta Platforms,United States,2004,3.070 billion[1][2][3],NA,3070,Meta Platforms
-YouTube,Alphabet Inc.,United States,2005,2.504 billion[4],3 billion users[5],2504,Alphabet Inc.
-WhatsApp,Meta Platforms,United States,2009,2 billion[4],Had 1 billion daily active users when it had 1.3 billion monthly active users[citation needed],2000,Meta Platforms
-Instagram,Meta Platforms,United States,2010,3 billion[6],NA,3000,Meta Platforms
-TikTok,ByteDance,China,2016,1.582 billion[4],NA,1582,ByteDance
-WeChat,Tencent,China,2011,1.343 billion[4],NA,1343,Tencent
-Messenger,Meta Platforms,United States,2011,1.01 billion[4],NA,1010,Meta Platforms
-Telegram,Telegram,UAE[7],2013,1 billion[8],NA,1000,Other
-LinkedIn,Microsoft,United States,2003,930 million,700 million registered users[9],930,Microsoft
-Snapchat,Snap Inc.,United States,2011,900 million[10],460 million daily active users[10],900,Other
-Reddit,Reddit,United States,2005,760 million[11],"101.7 million daily active users, 380 million weekly active users[12]",760,Other
-Douyin,ByteDance,China,2016,755 million[4],NA,755,ByteDance
-Kuaishou,Kuaishou,China,2011,700 million[4],NA,700,Other
-Weibo,Sina Corporation,China,2009,586 million[13],241 million daily active users[14],586,Other
-Pinterest,Pinterest,United States,2009,570 million[15],98 million U.S. monthly active users[16],570,Other
-X,SpaceXAI,United States,2006,540-570 million[17],NA,540,Other
-QQ,Tencent,China,1999,554 million[4],267 million daily active users[citation needed],554,Tencent
-Qzone,Tencent,China,2005,517 million[18],NA,517,Tencent
-Threads,Meta Platforms,United States,2023,500 million[19],NA,500,Meta Platforms
-Quora,Quora,United States,2009,400 million[20],NA,400,Other
-Bilibili,Bilibili,China,2009,376 million[21],NA,376,Other
-Xiaohongshu,Xingyin Information Technology,China,2013,300 million[22],NA,300,Other
-JOSH,VerSe Innovation,India,2020,300 million[23],NA,300,Other
-Teams,Microsoft,United States,2017,300 million[24],145 million daily active users[25],300,Microsoft
-Tieba,Baidu,China,2003,300 million[citation needed],1500 million registered users[citation needed],300,Other
-Viber,Rakuten,Japan,2010,260 million[26],1.169 billion registered users[27],260,Other
-imo,Singularity IM,United States,2007,200 million[28],NA,200,Other
-Discord,Discord,United States,2015,200 million[29],NA,200,Other
-Twitch,Amazon,United States,2011,180 million[30],NA,180,Other
-Line,Naver,Japan[31],2011,178 million[32],NA,178,Other
-Likee,JOYY,Singapore[33],2017,150 million[34],NA,150,Other
-Picsart,Picsart,Armenia[35],2011,150 million[36],NA,150,Other
-Vevo,Vevo,United States,2009,150 million[37],NA,150,Other
-Tumblr,Automattic,United States,2007,135 million[38],NA,135,Other
-Signal,Signal,United States,2014,100 million[39],NA,100,Other
-Life360,Life360,United States,2008,100 million[40],NA,100,Other
+Facebook,Meta Platforms,United States,2004,3.070 billion[1][2][3],,3070.0,Meta Platforms
+YouTube,Alphabet Inc.,United States,2005,2.504 billion[4],3 billion users[5],2504.0,Alphabet Inc.
+WhatsApp,Meta Platforms,United States,2009,2 billion[4],Had 1 billion daily active users when it had 1.3 billion monthly active users[citation needed],2000.0,Meta Platforms
+Instagram,Meta Platforms,United States,2010,3 billion[6],,3000.0,Meta Platforms
+TikTok,ByteDance,China,2016,1.582 billion[4],,1582.0,ByteDance
+WeChat,Tencent,China,2011,1.343 billion[4],,1343.0,Tencent
+Messenger,Meta Platforms,United States,2011,1.01 billion[4],,1010.0,Meta Platforms
+Telegram,Telegram,UAE[7],2013,1 billion[8],,1000.0,Other
+LinkedIn,Microsoft,United States,2003,930 million,700 million registered users[9],930.0,Microsoft
+Snapchat,Snap Inc.,United States,2011,900 million[10],460 million daily active users[10],900.0,Other
+Reddit,Reddit,United States,2005,760 million[11],"101.7 million daily active users, 380 million weekly active users[12]",760.0,Other
+Douyin,ByteDance,China,2016,755 million[4],,755.0,ByteDance
+Kuaishou,Kuaishou,China,2011,700 million[4],,700.0,Other
+Weibo,Sina Corporation,China,2009,586 million[13],241 million daily active users[14],586.0,Other
+Pinterest,Pinterest,United States,2009,570 million[15],98 million U.S. monthly active users[16],570.0,Other
+X,SpaceXAI,United States,2006,540-570 million[17],,540.0,Other
+QQ,Tencent,China,1999,554 million[4],267 million daily active users[citation needed],554.0,Tencent
+Qzone,Tencent,China,2005,517 million[18],,517.0,Tencent
+Threads,Meta Platforms,United States,2023,500 million[19],,500.0,Meta Platforms
+Quora,Quora,United States,2009,400 million[20],,400.0,Other
+Bilibili,Bilibili,China,2009,376 million[21],,376.0,Other
+Xiaohongshu,Xingyin Information Technology,China,2013,300 million[22],,300.0,Other
+JOSH,VerSe Innovation,India,2020,300 million[23],,300.0,Other
+Teams,Microsoft,United States,2017,300 million[24],145 million daily active users[25],300.0,Microsoft
+Tieba,Baidu,China,2003,300 million[citation needed],1500 million registered users[citation needed],300.0,Other
+Viber,Rakuten,Japan,2010,260 million[26],1.169 billion registered users[27],260.0,Other
+imo,Singularity IM,United States,2007,200 million[28],,200.0,Other
+Discord,Discord,United States,2015,200 million[29],,200.0,Other
+Twitch,Amazon,United States,2011,180 million[30],,180.0,Other
+Line,Naver,Japan[31],2011,178 million[32],,178.0,Other
+Likee,JOYY,Singapore[33],2017,150 million[34],,150.0,Other
+Picsart,Picsart,Armenia[35],2011,150 million[36],,150.0,Other
+Vevo,Vevo,United States,2009,150 million[37],,150.0,Other
+Tumblr,Automattic,United States,2007,135 million[38],,135.0,Other
+Signal,Signal,United States,2014,100 million[39],,100.0,Other
+Life360,Life360,United States,2008,100 million[40],,100.0,Other

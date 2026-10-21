@@ -56,7 +56,7 @@ flowchart TB
     facts -->|"No"| pages{"Pages, categories,<br/>or links?"}
     pages -->|"iii. Yes"| api["Action API or REST API<br/><code>categorymembers</code>"]
     pages -->|"No"| table{"One clean<br/>HTML table?"}
-    table -->|"iv. Yes"| html["<code>pandas.read_html()</code><br/>small and targeted"]
+    table -->|"iv. Yes"| html["<code>html_table()</code> or<br/><code>read_html()</code><br/>small and targeted"]
 
     style start fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
     style bulk fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
@@ -73,13 +73,41 @@ flowchart TB
 
 The pages on this site need a handful of tables and lists, not whole corpora, so they rely on two lightweight methods:
 
-* `pandas.read_html()`: used for pages where the data already sits in a clean HTML table (see [Table sources](table_sources.qmd)). This is the small, targeted HTML scraping at the bottom of the list above. It's fast and needs very little code, but it depends on the table's header names, so a scraper should match on a distinctive column (`match="GDP decline"`) instead of the table's position on the page.
+* `rvest::html_table()` and `pandas.read_html()`: used for pages where the data already sits in a clean HTML table (see [Table sources](table_sources.qmd)). This is the small, targeted HTML scraping at the bottom of the list above. It's fast and needs very little code, but it depends on the table's header names, so a scraper should match on a distinctive column (`"GDP decline"`) instead of the table's position on the page.
 * The Action API's `categorymembers` endpoint: used for categories and lists that have no table to parse (see [List sources](list_sources.qmd)).
 
 API results come back in pages. When there are more results than `cmlimit` allows, the response includes a `continue` block, and you pass its `cmcontinue` value with the next request. The loop below collects every member of a category this way:
 
+::: {.panel-tabset group="language"}
+
+## R
+
+```{r}
+#| label: api-pagination-r
+#| eval: false
+library(httr2)
+
+resps <- request("https://en.wikipedia.org/w/api.php") |>
+  req_user_agent("wikimill-project/0.1") |>
+  req_url_query(
+    action = "query", list = "categorymembers",
+    cmtitle = "Category:Defunct_shopping_malls_in_the_United_States",
+    cmlimit = 500, format = "json"
+  ) |>
+  req_perform_iterative(
+    next_req = iterate_with_cursor(
+      "cmcontinue",
+      resp_param_value = \(resp) resp_body_json(resp)$continue$cmcontinue
+    ),
+    max_reqs = Inf
+  )
+members <- resps_data(resps, \(resp) resp_body_json(resp)$query$categorymembers)
+```
+
+## Python
+
 ```{python}
-#| label: api-pagination
+#| label: api-pagination-py
 #| eval: false
 import requests
 
@@ -97,6 +125,14 @@ while True:
         break
     params["cmcontinue"] = resp["continue"]["cmcontinue"]
 ```
+
+:::
+
+::: {.callout-tip}
+## httr2 has the edge
+
+`iterate_with_cursor()` reads the `cmcontinue` token and builds the next request for us. With `requests`, we write the loop and the stopping rule ourselves.
+:::
 
 ## Making polite requests
 

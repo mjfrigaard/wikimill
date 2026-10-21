@@ -26,6 +26,10 @@ flowchart TB
     style filt fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
 ```
 
+::: {.panel-tabset group="language"}
+
+## R
+
 ```{r}
 #| label: clean-minimum-wage
 #| message: false
@@ -46,5 +50,28 @@ wage_clean <- read_csv("data/minimum_wage.csv") |>
 write_csv(wage_clean, "data/minimum_wage_clean.csv")
 wage_clean
 ```
+
+## Python
+
+```{python}
+#| label: clean-minimum-wage-py
+import pandas as pd
+
+wage = pd.read_csv("data/minimum_wage.csv")
+wage_clean = wage.filter(regex="Country|Annual_Nominal").iloc[:, :2]
+wage_clean.columns = ["country", "annual_wage_usd"]
+wage_clean["annual_wage_usd"] = pd.to_numeric(wage_clean["annual_wage_usd"], errors="coerce")
+wage_clean = wage_clean.dropna(subset=["annual_wage_usd"])
+wage_clean.to_csv("data/minimum_wage_clean.csv", index=False)
+wage_clean.head()
+```
+
+:::
+
+::: {.callout-note}
+## Either works
+
+`matches()` and `filter(regex=)` both pick columns by pattern. `matches()` ignores case by default, while `filter(regex=)` doesn't, which doesn't matter for these column names.
+:::
 
 See [viz_minimum_wage.qmd](viz_minimum_wage.qmd) for the chart built on this.

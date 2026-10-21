@@ -5,8 +5,33 @@ engine: knitr
 
 The "List of most popular social platforms" page has three tables: a 1-row stub, a 5-row table of video-calling apps with a `No.` ranking column, and the 36-row table we actually want. All three share overlapping column names, so instead of matching on a header string we pick the table that has `Country[b]` but not `No.`.
 
+::: {.panel-tabset group="language"}
+
+## R
+
+```{r}
+#| label: scrape-social-r
+#| eval: false
+library(httr2)
+library(rvest)
+library(readr)
+
+html <- request("https://en.wikipedia.org/wiki/List_of_most_popular_social_platforms") |>
+  req_user_agent("wikimill-project/0.1") |>
+  req_perform() |>
+  resp_body_html()
+
+tables <- html_table(html)
+social <- Filter(\(t) "Country[b]" %in% names(t) && !"No." %in% names(t), tables)[[1]]
+names(social) <- c("name", "company", "country", "launched", "monthly_active_users", "other_metrics")
+write_csv(social, "data/social_platforms.csv")
+head(social)
+```
+
+## Python
+
 ```{python}
-#| label: scrape-social
+#| label: scrape-social-py
 #| eval: false
 import io
 import pandas as pd
@@ -22,4 +47,12 @@ social.to_csv("data/social_platforms.csv", index=False)
 social.head()
 ```
 
-This chunk is shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `python src/scrape_social.py` from the project root to refresh `data/social_platforms.csv`. See [clean_social.qmd](clean_social.qmd) for the next step.
+:::
+
+::: {.callout-note}
+## Either works
+
+Both versions pick the table by its column names, so the code is nearly line for line the same.
+:::
+
+These chunks are shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `Rscript src/scrape_social.R` or `python src/scrape_social.py` from the project root to refresh `data/social_platforms.csv`. See [clean_social.qmd](clean_social.qmd) for the next step.

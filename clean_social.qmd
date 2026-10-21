@@ -28,6 +28,10 @@ flowchart TB
     style filt fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
 ```
 
+::: {.panel-tabset group="language"}
+
+## R
+
 ```{r}
 #| label: clean-social
 #| message: false
@@ -60,5 +64,31 @@ social_clean <- read_csv("data/social_platforms.csv") |>
 write_csv(social_clean, "data/social_platforms_clean.csv")
 social_clean
 ```
+
+## Python
+
+```{python}
+#| label: clean-social-py
+import pandas as pd
+
+social = pd.read_csv("data/social_platforms.csv")
+mau_value = pd.to_numeric(social["monthly_active_users"].str.extract(r"([\d.]+)")[0], errors="coerce")
+mau_unit = social["monthly_active_users"].str.extract(r"(billion|million)")[0]
+social["mau_millions"] = mau_value * mau_unit.map({"billion": 1000, "million": 1})
+top_companies = ["Meta Platforms", "Tencent", "ByteDance", "Microsoft", "Alphabet Inc."]
+social["company_group"] = social["company"].where(social["company"].isin(top_companies), "Other")
+
+social_clean = social.dropna(subset=["mau_millions"])
+social_clean.to_csv("data/social_platforms_clean.csv", index=False)
+social_clean.head()
+```
+
+:::
+
+::: {.callout-note}
+## Either works
+
+`case_when()` and a `map()` from unit to multiplier convert the units equally well, and `if_else()` and `where()` both collapse the smaller companies into "Other".
+:::
 
 See [viz_social.qmd](viz_social.qmd) for the chart built on this.

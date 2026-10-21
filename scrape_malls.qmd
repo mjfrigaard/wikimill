@@ -3,12 +3,58 @@ title: "Scrape: malls"
 engine: knitr
 ---
 
-A Wikipedia category has no table (it's just a list of page links), so `pandas.read_html()` has nothing to parse. The MediaWiki API's `categorymembers` endpoint returns the same list as structured JSON instead, and handles pagination with a `cmcontinue` token for categories over 500 members.
+A Wikipedia category has no table (it's just a list of page links), so `rvest::html_table()` and `pandas.read_html()` have nothing to parse. The MediaWiki API's `categorymembers` endpoint returns the same list as structured JSON instead, and handles pagination with a `cmcontinue` token for categories over 500 members.
 
 The code below fetches the defunct malls category and its two subcategories, then labels each page with the category it came from.
 
+::: {.panel-tabset group="language"}
+
+## R
+
+```{r}
+#| label: scrape-malls-r
+#| eval: false
+library(httr2)
+library(dplyr)
+library(readr)
+
+fetch_category_members <- function(category) {
+  resps <- request("https://en.wikipedia.org/w/api.php") |>
+    req_user_agent("wikimill-project/0.1") |>
+    req_url_query(
+      action = "query", list = "categorymembers",
+      cmtitle = paste0("Category:", category), cmlimit = 500,
+      format = "json"
+    ) |>
+    req_perform_iterative(
+      next_req = iterate_with_cursor(
+        "cmcontinue",
+        resp_param_value = \(resp) resp_body_json(resp)$continue$cmcontinue
+      ),
+      max_reqs = Inf
+    )
+  titles <- resps_data(resps, \(resp) {
+    vapply(resp_body_json(resp)$query$categorymembers, \(m) m$title, character(1))
+  })
+  tibble(title = titles)
+}
+
+categories <- c(
+  "Defunct_shopping_malls_in_the_United_States" = "Defunct",
+  "Demolished_shopping_malls_in_the_United_States" = "Demolished",
+  "Abandoned_shopping_malls_in_the_United_States" = "Abandoned"
+)
+malls <- bind_rows(lapply(names(categories), \(cat) {
+  fetch_category_members(cat) |> mutate(status = categories[[cat]])
+}))
+write_csv(malls, "data/defunct_malls.csv")
+head(malls)
+```
+
+## Python
+
 ```{python}
-#| label: scrape-malls
+#| label: scrape-malls-py
 #| eval: false
 import pandas as pd
 import requests
@@ -43,4 +89,12 @@ malls.to_csv("data/defunct_malls.csv", index=False)
 malls.head()
 ```
 
-This chunk is shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `python src/scrape_malls.py` from the project root to refresh `data/defunct_malls.csv`. See [clean_malls.qmd](clean_malls.qmd) for the next step.
+:::
+
+::: {.callout-tip}
+## httr2 has the edge
+
+`req_perform_iterative()` with `iterate_with_cursor()` handles the `cmcontinue` loop for us, and `httr2` also ships `req_throttle()` and `req_retry()` for polite, rate-limited requests. With `requests`, the pagination loop, throttling, and retries are all code we write ourselves.
+:::
+
+These chunks are shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `Rscript src/scrape_malls.R` or `python src/scrape_malls.py` from the project root to refresh `data/defunct_malls.csv`. See [clean_malls.qmd](clean_malls.qmd) for the next step.

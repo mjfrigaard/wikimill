@@ -2,7 +2,7 @@
 title: "Table sources"
 ---
 
-The Wikipedia pages below already store their data in a clean HTML table. We can scrape these directly with `pandas.read_html()` without any text parsing.
+The Wikipedia pages below already store their data in a clean HTML table. We can scrape these directly with `rvest::html_table()` or `pandas.read_html()` without any text parsing.
 
 * [List of social networking services](https://en.wikipedia.org/wiki/List_of_social_networking_services): name, type, focus/audience.
 * [List of defunct social networking services](https://en.wikipedia.org/wiki/List_of_defunct_social_networking_services): name, type, focus. Covers the platforms this generation grew up on and lost (Myspace, Vine, AIM).
@@ -26,9 +26,9 @@ The Wikipedia pages below already store their data in a clean HTML table. We can
 %%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
 
 flowchart TB
-    wiki(["<strong>Wikipedia page</strong><br/>HTML table"]) -->|"i. Request"| scrape["<code>requests</code> + <code>pandas.read_html()</code>"]
+    wiki(["<strong>Wikipedia page</strong><br/>HTML table"]) -->|"i. Request"| scrape["<code>httr2</code> + <code>rvest</code><br/>or <code>requests</code> + <code>pandas</code>"]
     scrape -->|"ii. Save raw"| csv[("<code>data/*.csv</code>")]
-    csv -->|"iii. Clean"| clean["<code>dplyr</code> clean + reshape"]
+    csv -->|"iii. Clean"| clean["<code>dplyr</code> or <code>pandas</code><br/>clean + reshape"]
     clean -->|"iv. Save clean"| cleancsv[("<code>data/*_clean.csv</code>")]
 
     style wiki fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px

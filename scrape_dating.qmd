@@ -5,8 +5,36 @@ engine: knitr
 
 The "Comparison of online dating services" table mixes a registered-user count with a reporting year in one free-text cell, and the "Free" and "All features free" columns hold full sentences rather than a plain Yes/No. We save the raw columns as-is here; the parsing happens in [clean_dating.qmd](clean_dating.qmd).
 
+::: {.panel-tabset group="language"}
+
+## R
+
+```{r}
+#| label: scrape-dating-r
+#| eval: false
+library(httr2)
+library(rvest)
+library(readr)
+
+html <- request("https://en.wikipedia.org/wiki/Comparison_of_online_dating_services") |>
+  req_user_agent("wikimill-project/0.1") |>
+  req_perform() |>
+  resp_body_html()
+
+tables <- html_table(html)
+dating <- Filter(\(t) any(grepl("Registered users", names(t))), tables)[[1]]
+names(dating) <- c(
+  "name", "description", "owner", "registered_users", "free",
+  "all_features_free", "hetero", "poly", "free_messaging", "std_notification"
+)
+write_csv(dating, "data/dating_services.csv")
+head(dating)
+```
+
+## Python
+
 ```{python}
-#| label: scrape-dating
+#| label: scrape-dating-py
 #| eval: false
 import io
 import pandas as pd
@@ -26,4 +54,12 @@ dating.to_csv("data/dating_services.csv", index=False)
 dating.head()
 ```
 
-This chunk is shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `python src/scrape_dating.py` from the project root to refresh `data/dating_services.csv`.
+:::
+
+::: {.callout-note}
+## Either works
+
+`pandas.read_html(match=)` and `Filter()` over `html_table()` do the same job here: keep the table whose header mentions "Registered users".
+:::
+
+These chunks are shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `Rscript src/scrape_dating.R` or `python src/scrape_dating.py` from the project root to refresh `data/dating_services.csv`.

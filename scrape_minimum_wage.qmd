@@ -3,10 +3,39 @@ title: "Scrape: minimum wage"
 engine: knitr
 ---
 
-The "List of countries by minimum wage" table has a nested header: the annual and hourly figures are each split into nominal and PPP sub-columns. `pandas` reads this as a `MultiIndex`, so we flatten it into single column names before saving.
+The "List of countries by minimum wage" table has a nested header: the annual and hourly figures are each split into nominal and PPP sub-columns. `pandas` reads this as a `MultiIndex`, so we flatten it into single column names before saving. `rvest` reads only the top header row, so the R version rebuilds the same names from the first data row.
+
+::: {.panel-tabset group="language"}
+
+## R
+
+```{r}
+#| label: scrape-minimum-wage-r
+#| eval: false
+library(httr2)
+library(rvest)
+library(dplyr)
+library(readr)
+
+html <- request("https://en.wikipedia.org/wiki/List_of_countries_by_minimum_wage") |>
+  req_user_agent("wikimill-project/0.1") |>
+  req_perform() |>
+  resp_body_html()
+
+tables <- html_table(html)
+wage <- Filter(\(t) "Annual" %in% names(t), tables)[[1]]
+# html_table() keeps only the top header row; the second one lands in row 1
+names(wage) <- paste(names(wage), unlist(wage[1, ]), sep = "_")
+wage <- wage[-1, ] |>
+  mutate(across(matches("Nominal|PPP"), parse_number))
+write_csv(wage, "data/minimum_wage.csv")
+head(wage)
+```
+
+## Python
 
 ```{python}
-#| label: scrape-minimum-wage
+#| label: scrape-minimum-wage-py
 #| eval: false
 import io
 import pandas as pd
@@ -24,4 +53,12 @@ wage.to_csv("data/minimum_wage.csv", index=False)
 wage.head()
 ```
 
-This chunk is shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `python src/scrape_minimum_wage.py` from the project root to refresh `data/minimum_wage.csv`. See [clean_minimum_wage.qmd](clean_minimum_wage.qmd) for the next step.
+:::
+
+::: {.callout-tip}
+## pandas has the edge
+
+`read_html()` reads the two header rows as a `MultiIndex`, and its default `thousands=","` turns `4,637` into a number. `html_table()` keeps only the top header row, so the second row lands in the data (and `Annual` and `Hourly` each appear twice), and the comma-grouped numbers stay as text. The R version pastes the first data row onto the names, drops it, then runs `parse_number()` on the wage columns.
+:::
+
+These chunks are shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `Rscript src/scrape_minimum_wage.R` or `python src/scrape_minimum_wage.py` from the project root to refresh `data/minimum_wage.csv`. See [clean_minimum_wage.qmd](clean_minimum_wage.qmd) for the next step.
