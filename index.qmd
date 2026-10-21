@@ -6,6 +6,7 @@ Wikipedia "List of" pages and categories make good raw material for data visuali
 
 This site scrapes a few of those tables with Python and visualizes them with R and `ggplot2`. It covers two themes: topics that shaped the millennial generation (recessions, wage stagnation, platforms that came and went) and Y2K-era internet nostalgia (early browsers, worms, instant messengers).
 
-* [Table sources](table_sources.qmd): Wikipedia pages scraped directly with `pandas.read_html()`, plus the R cleaning steps.
-* [List sources](list_sources.qmd): Wikipedia bulleted lists and categories, scraped through the MediaWiki API, plus the R cleaning steps.
+* [Table sources](table_sources.qmd): Wikipedia pages scraped directly with `pandas.read_html()`.
+* [List sources](list_sources.qmd): Wikipedia bulleted lists and categories, scraped through the MediaWiki API.
+* Each topic has a `scrape_*.qmd` page (Python), a `clean_*.qmd` page (R data manipulation), and a `viz_*.qmd` page (`ggplot2`).
 * [Recessions](viz_recessions.qmd), [Minimum wage](viz_minimum_wage.qmd), [Dating services](viz_dating.qmd), and [Malls](viz_malls.qmd): the `ggplot2` visualizations built on the cleaned data.

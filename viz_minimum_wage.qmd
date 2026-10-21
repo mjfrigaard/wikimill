@@ -2,7 +2,7 @@
 title: "Minimum wage"
 ---
 
-The top 20 countries by nominal annual minimum wage. Data cleaned in [table_sources.qmd](table_sources.qmd); this reads the result and plots it.
+The top 20 countries by nominal annual minimum wage. Data cleaned in [clean_minimum_wage.qmd](clean_minimum_wage.qmd); this reads the result and plots it.
 
 ```{r}
 #| label: fig-minimum-wage

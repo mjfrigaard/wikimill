@@ -1,0 +1,28 @@
+---
+title: "Scrape: recessions"
+engine: knitr
+---
+
+The "List of recessions in the United States" table has a flat header, so renaming the columns is enough. The page is fetched with `requests`, then `pandas.read_html()` finds every table on it and `match=` picks out the one with "GDP decline" in its header.
+
+```{python}
+#| label: scrape-recessions
+#| eval: false
+import io
+import pandas as pd
+import requests
+
+url = "https://en.wikipedia.org/wiki/List_of_recessions_in_the_United_States"
+html = requests.get(url, headers={"User-Agent": "wikimill-project/0.1"}).text
+
+tables = pd.read_html(io.StringIO(html), match="GDP decline")
+recessions = tables[0]
+recessions.columns = [
+    "name", "period_range", "duration", "time_since_previous",
+    "peak_unemployment", "gdp_decline", "characteristics"
+]
+recessions.to_csv("data/recessions.csv", index=False)
+recessions.head()
+```
+
+This chunk is shown for reference only (`eval: false`), rendering the site doesn't hit Wikipedia. Run `python src/scrape_recessions.py` from the project root to refresh `data/recessions.csv`. See [clean_recessions.qmd](clean_recessions.qmd) for the next step.

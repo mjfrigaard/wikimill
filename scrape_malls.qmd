@@ -1,0 +1,46 @@
+---
+title: "Scrape: malls"
+engine: knitr
+---
+
+A Wikipedia category has no table, it is just a list of page links, so `pandas.read_html()` has nothing to parse. The MediaWiki API's `categorymembers` endpoint returns the same list as structured JSON instead, and handles pagination with a `cmcontinue` token for categories over 500 members.
+
+This fetches the defunct malls category and its two subcategories, and labels each page with the category it came from.
+
+```{python}
+#| label: scrape-malls
+#| eval: false
+import pandas as pd
+import requests
+
+API = "https://en.wikipedia.org/w/api.php"
+
+def fetch_category_members(category):
+    params = {
+        "action": "query", "list": "categorymembers",
+        "cmtitle": f"Category:{category}", "cmlimit": 500,
+        "format": "json"
+    }
+    members = []
+    while True:
+        resp = requests.get(API, params=params, headers={"User-Agent": "wikimill-project/0.1"}).json()
+        members.extend(resp["query"]["categorymembers"])
+        if "continue" not in resp:
+            break
+        params["cmcontinue"] = resp["continue"]["cmcontinue"]
+    return pd.DataFrame(members)[["title"]]
+
+categories = {
+    "Defunct_shopping_malls_in_the_United_States": "Defunct",
+    "Demolished_shopping_malls_in_the_United_States": "Demolished",
+    "Abandoned_shopping_malls_in_the_United_States": "Abandoned",
+}
+malls = pd.concat(
+    [fetch_category_members(cat).assign(status=label) for cat, label in categories.items()],
+    ignore_index=True
+)
+malls.to_csv("data/defunct_malls.csv", index=False)
+malls.head()
+```
+
+This chunk is shown for reference only (`eval: false`), rendering the site doesn't hit Wikipedia. Run `python src/scrape_malls.py` from the project root to refresh `data/defunct_malls.csv`. See [clean_malls.qmd](clean_malls.qmd) for the next step.

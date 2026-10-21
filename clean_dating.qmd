@@ -1,0 +1,35 @@
+---
+title: "Clean: dating services"
+---
+
+In the CSV from [scrape_dating.qmd](scrape_dating.qmd), the registered-user count and the reporting year are both embedded in one string, like `"30,000,000 as of 2006[2]"`. The user count always has thousands separators, so matching a comma-grouped number pulls it out first; whatever's left over is where the year lives. The "Free" and "All features free" columns are full sentences, we keep the first word (Yes/No/Maybe) as a clean category and leave the original text in place.
+
+```{r}
+#| label: clean-dating
+#| message: false
+#| collapse: true
+library(dplyr)
+library(readr)
+library(stringr)
+
+dating_clean <- read_csv("data/dating_services.csv") |>
+  mutate(
+    users_raw = str_extract(registered_users, "\\d{1,3}(?:,\\d{3})+"),
+    registered_users_n = as.numeric(str_remove_all(users_raw, ",")),
+    users_year = as.integer(str_extract(str_remove(registered_users, fixed(users_raw)), "\\d{4}")),
+    free_clean = str_extract(free, regex("^(Yes|No|Maybe)", ignore_case = TRUE)),
+    all_features_free_clean = str_extract(all_features_free, regex("^(Yes|No|Maybe)", ignore_case = TRUE))
+  ) |>
+  select(-users_raw) |>
+  filter(!is.na(registered_users_n)) |>
+  distinct(name, .keep_all = TRUE)
+```
+
+```{r}
+#| label: view-dating
+#| collapse: true
+write_csv(dating_clean, "data/dating_services_clean.csv")
+dating_clean
+```
+
+See [viz_dating.qmd](viz_dating.qmd) for the chart built on this.

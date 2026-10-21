@@ -2,7 +2,7 @@
 title: "Recessions"
 ---
 
-The recessions that shaped when millennials entered the job market, faceted by the generation that was around 22, typical career-entry age, when each one started. Data cleaned in [table_sources.qmd](table_sources.qmd); this reads the result and plots it.
+The recessions that shaped when millennials entered the job market, faceted by the generation that was around 22, typical career-entry age, when each one started. Data cleaned in [clean_recessions.qmd](clean_recessions.qmd); this reads the result and plots it.
 
 ```{r}
 #| label: fig-recessions

@@ -6,10 +6,12 @@ Live site: https://mjfrigaard.github.io/wikimill/
 
 ## Structure
 
-* `table_sources.qmd`: Wikipedia pages scraped directly with `pandas.read_html()`, plus the R/dplyr cleaning steps.
-* `list_sources.qmd`: Wikipedia bulleted lists and categories, scraped through the MediaWiki API, plus the R/dplyr cleaning steps.
-* `viz_recessions.qmd`, `viz_minimum_wage.qmd`: the `ggplot2` visualizations, built on the cleaned CSVs.
-* `src/`: standalone Python and R scripts that duplicate the scraping, cleaning, and visualization code in the `.qmd` files. The scraping chunks in `table_sources.qmd` and `list_sources.qmd` are set to `eval: false`, so rendering the site never hits Wikipedia. Run the scripts in `src/` from the project root to refresh `data/`.
+* `table_sources.qmd`: overview of Wikipedia pages scraped directly with `pandas.read_html()`.
+* `list_sources.qmd`: overview of Wikipedia bulleted lists and categories, scraped through the MediaWiki API.
+* `scrape_*.qmd`: the Python scraping code for each topic (`recessions`, `minimum_wage`, `dating`, `malls`).
+* `clean_*.qmd`: the R/dplyr cleaning steps for each topic.
+* `viz_*.qmd`: the `ggplot2` visualizations, built on the cleaned CSVs.
+* `src/`: standalone Python and R scripts that duplicate the scraping, cleaning, and visualization code in the `.qmd` files. The chunks in `scrape_*.qmd` are set to `eval: false`, so rendering the site never hits Wikipedia. Run the scripts in `src/` from the project root to refresh `data/`.
 * `data/`: cached CSVs (raw and cleaned) and figure PNGs, checked in so the site builds without network access.
 
 ## Scraping method
@@ -36,11 +38,13 @@ To refresh the scraped data:
 source .venv/bin/activate
 python src/scrape_recessions.py
 python src/scrape_minimum_wage.py
+python src/scrape_dating.py
 python src/scrape_malls.py
 deactivate
 
 Rscript src/clean_recessions.R
 Rscript src/clean_minimum_wage.R
+Rscript src/clean_dating.R
 Rscript src/clean_malls.R
 ```
 

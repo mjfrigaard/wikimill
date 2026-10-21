@@ -1,0 +1,28 @@
+---
+title: "Clean: minimum wage"
+---
+
+For the minimum wage data from [scrape_minimum_wage.qmd](scrape_minimum_wage.qmd), this keeps the country and nominal annual wage columns and drops rows with no wage on record.
+
+```{r}
+#| label: clean-minimum-wage
+#| message: false
+#| collapse: true
+library(dplyr)
+library(readr)
+
+wage_clean <- read_csv("data/minimum_wage.csv") |>
+  select(matches("Country"), matches("Annual_Nominal")) |>
+  rename(country = 1, annual_wage_usd = 2) |>
+  mutate(annual_wage_usd = as.double(annual_wage_usd)) |>
+  filter(!is.na(annual_wage_usd))
+```
+
+```{r}
+#| label: view-minimum-wage
+#| collapse: true
+write_csv(wage_clean, "data/minimum_wage_clean.csv")
+wage_clean
+```
+
+See [viz_minimum_wage.qmd](viz_minimum_wage.qmd) for the chart built on this.

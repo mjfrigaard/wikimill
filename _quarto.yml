@@ -14,6 +14,18 @@ website:
         menu:
           - table_sources.qmd
           - list_sources.qmd
+      - text: Scrape
+        menu:
+          - scrape_recessions.qmd
+          - scrape_minimum_wage.qmd
+          - scrape_dating.qmd
+          - scrape_malls.qmd
+      - text: Clean
+        menu:
+          - clean_recessions.qmd
+          - clean_minimum_wage.qmd
+          - clean_dating.qmd
+          - clean_malls.qmd
       - text: Visualizations
         menu:
           - viz_recessions.qmd

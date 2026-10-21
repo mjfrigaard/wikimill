@@ -2,7 +2,7 @@
 title: "Malls"
 ---
 
-How American malls in the defunct category met their end. Data cleaned in [list_sources.qmd](list_sources.qmd); this reads the result and plots it.
+How American malls in the defunct category met their end. Data cleaned in [clean_malls.qmd](clean_malls.qmd); this reads the result and plots it.
 
 ```{r}
 #| label: fig-malls

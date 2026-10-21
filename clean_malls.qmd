@@ -1,0 +1,23 @@
+---
+title: "Clean: malls"
+---
+
+A mall in the "Demolished" or "Abandoned" subcategory from [scrape_malls.qmd](scrape_malls.qmd) is also a member of the parent "Defunct" category, so each title can appear more than once. This keeps the most specific status per mall and counts how many fall into each one.
+
+```{r}
+#| label: clean-malls
+#| message: false
+library(dplyr)
+library(readr)
+
+malls_clean <- read_csv("data/defunct_malls.csv") |>
+  mutate(status = factor(status, levels = c("Demolished", "Abandoned", "Defunct"))) |>
+  arrange(status) |>
+  distinct(title, .keep_all = TRUE)
+
+write_csv(malls_clean, "data/defunct_malls_clean.csv")
+
+malls_clean |> count(status, sort = TRUE)
+```
+
+See [viz_malls.qmd](viz_malls.qmd) for the chart built on this.

@@ -1,0 +1,29 @@
+---
+title: "Scrape: dating services"
+engine: knitr
+---
+
+The "Comparison of online dating services" table mixes a registered-user count with a reporting year in one free-text cell, and the "Free" and "All features free" columns hold full sentences rather than a plain Yes/No. We save the raw columns as-is here; the parsing happens in [clean_dating.qmd](clean_dating.qmd).
+
+```{python}
+#| label: scrape-dating
+#| eval: false
+import io
+import pandas as pd
+import requests
+
+dating_html = requests.get(
+    "https://en.wikipedia.org/wiki/Comparison_of_online_dating_services",
+    headers={"User-Agent": "wikimill-project/0.1"}
+).text
+tables = pd.read_html(io.StringIO(dating_html), match="Registered users")
+dating = tables[0]
+dating.columns = [
+    "name", "description", "owner", "registered_users", "free",
+    "all_features_free", "hetero", "poly", "free_messaging", "std_notification"
+]
+dating.to_csv("data/dating_services.csv", index=False)
+dating.head()
+```
+
+This chunk is shown for reference only (`eval: false`), rendering the site doesn't hit Wikipedia. Run `python src/scrape_dating.py` from the project root to refresh `data/dating_services.csv`.
