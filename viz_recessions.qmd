@@ -2,7 +2,7 @@
 title: "Recessions"
 ---
 
-The recessions that shaped when each generation entered the job market. A generation "experienced" a recession if it overlapped the years that generation turned 22, typical career-entry age. Data cleaned in [clean_recessions.qmd](clean_recessions.qmd); this reads the result and plots it two ways.
+This page plots the recessions that shaped when each generation entered the job market. A generation "experienced" a recession if the recession overlapped the years that generation turned 22, the typical career-entry age. The code below reads the data cleaned in [clean_recessions.qmd](clean_recessions.qmd) and plots it two ways.
 
 ```{r}
 #| label: read-recessions
@@ -23,7 +23,7 @@ era_colors <- c(
 
 ## Timeline
 
-Each lollipop marks a recession's start date and GDP decline. The shaded bands are each generation's entry window, so the recession sits inside the band of the generation it hit.
+Each lollipop marks a recession's start date and GDP decline. The shaded bands are each generation's entry window, so each recession sits inside the band of the generation it hit.
 
 ```{r}
 #| label: fig-recessions-timeline
@@ -64,7 +64,7 @@ ggplot(recessions) +
 
 ## By generation
 
-The same recessions grouped by generation, with each row's height proportional to how many recessions that generation entered the job market during.
+The chart below groups the same recessions by generation. Each row's height is proportional to the number of recessions that generation faced as it entered the job market.
 
 ```{r}
 #| label: fig-recessions-generation

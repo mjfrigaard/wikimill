@@ -1,6 +1,6 @@
 # wikimill
 
-A small Quarto website that scrapes Wikipedia "List of" pages and categories, then cleans and visualizes the data. Two themes: topics that shaped the millennial generation (recessions, wage stagnation, platforms that came and went) and Y2K-era internet nostalgia (early browsers, worms, instant messengers).
+wikimill is a small Quarto website that scrapes Wikipedia "List of" pages and categories, then cleans and visualizes the data. It covers two themes: topics that shaped the millennial generation (recessions, wage stagnation, platforms that came and went) and Y2K-era internet nostalgia (early browsers, worms, instant messengers).
 
 Live site: https://mjfrigaard.github.io/wikimill/
 

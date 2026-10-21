@@ -2,7 +2,7 @@
 title: "Dating services"
 ---
 
-The 15 online dating services with the most registered users, colored by whether every feature is free. Data cleaned in [clean_dating.qmd](clean_dating.qmd); this reads the result and plots it.
+The chart below shows the 15 online dating services with the most registered users, colored by whether every feature is free. The code reads the data cleaned in [clean_dating.qmd](clean_dating.qmd) and plots it.
 
 ```{r}
 #| label: fig-dating

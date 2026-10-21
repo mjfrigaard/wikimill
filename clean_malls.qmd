@@ -2,7 +2,7 @@
 title: "Clean: malls"
 ---
 
-A mall in the "Demolished" or "Abandoned" subcategory from [scrape_malls.qmd](scrape_malls.qmd) is also a member of the parent "Defunct" category, so each title can appear more than once. This keeps the most specific status per mall and counts how many fall into each one.
+A mall in the "Demolished" or "Abandoned" subcategory from [scrape_malls.qmd](scrape_malls.qmd) is also a member of the parent "Defunct" category, so each title can appear more than once. The code below keeps the most specific status for each mall and counts how many malls fall into each one.
 
 ```{r}
 #| label: clean-malls

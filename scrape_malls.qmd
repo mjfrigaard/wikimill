@@ -3,9 +3,9 @@ title: "Scrape: malls"
 engine: knitr
 ---
 
-A Wikipedia category has no table, it is just a list of page links, so `pandas.read_html()` has nothing to parse. The MediaWiki API's `categorymembers` endpoint returns the same list as structured JSON instead, and handles pagination with a `cmcontinue` token for categories over 500 members.
+A Wikipedia category has no table (it's just a list of page links), so `pandas.read_html()` has nothing to parse. The MediaWiki API's `categorymembers` endpoint returns the same list as structured JSON instead, and handles pagination with a `cmcontinue` token for categories over 500 members.
 
-This fetches the defunct malls category and its two subcategories, and labels each page with the category it came from.
+The code below fetches the defunct malls category and its two subcategories, then labels each page with the category it came from.
 
 ```{python}
 #| label: scrape-malls
@@ -43,4 +43,4 @@ malls.to_csv("data/defunct_malls.csv", index=False)
 malls.head()
 ```
 
-This chunk is shown for reference only (`eval: false`), rendering the site doesn't hit Wikipedia. Run `python src/scrape_malls.py` from the project root to refresh `data/defunct_malls.csv`. See [clean_malls.qmd](clean_malls.qmd) for the next step.
+This chunk is shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `python src/scrape_malls.py` from the project root to refresh `data/defunct_malls.csv`. See [clean_malls.qmd](clean_malls.qmd) for the next step.

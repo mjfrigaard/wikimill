@@ -2,7 +2,7 @@
 title: "Clean: minimum wage"
 ---
 
-For the minimum wage data from [scrape_minimum_wage.qmd](scrape_minimum_wage.qmd), this keeps the country and nominal annual wage columns and drops rows with no wage on record.
+The minimum wage CSV from [scrape_minimum_wage.qmd](scrape_minimum_wage.qmd) has more columns than the chart needs. The code below keeps the country and nominal annual wage columns and drops rows with no wage on record.
 
 ```{r}
 #| label: clean-minimum-wage

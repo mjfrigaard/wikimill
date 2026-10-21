@@ -2,7 +2,7 @@
 title: "Social platforms"
 ---
 
-The 15 social platforms with the most monthly active users, colored by owning company. Data cleaned in [clean_social.qmd](clean_social.qmd); this reads the result and plots it.
+The chart below shows the 15 social platforms with the most monthly active users, colored by owning company. The code reads the data cleaned in [clean_social.qmd](clean_social.qmd) and plots it.
 
 ```{r}
 #| label: fig-social

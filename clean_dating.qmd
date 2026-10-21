@@ -2,7 +2,7 @@
 title: "Clean: dating services"
 ---
 
-In the CSV from [scrape_dating.qmd](scrape_dating.qmd), the registered-user count and the reporting year are both embedded in one string, like `"30,000,000 as of 2006[2]"`. The user count always has thousands separators, so matching a comma-grouped number pulls it out first; whatever's left over is where the year lives. The "Free" and "All features free" columns are full sentences, we keep the first word (Yes/No/Maybe) as a clean category and leave the original text in place.
+In the CSV from [scrape_dating.qmd](scrape_dating.qmd), the registered-user count and the reporting year are both embedded in one string, like `"30,000,000 as of 2006[2]"`. The user count always has thousands separators, so matching a comma-grouped number pulls it out first; whatever's left over is where the year lives. The "Free" and "All features free" columns are full sentences; we keep the first word (Yes/No/Maybe) as a clean category and leave the original text in place.
 
 ```{r}
 #| label: clean-dating

@@ -16,6 +16,7 @@ website:
           - list_sources.qmd
       - text: Scrape
         menu:
+          - scraping.qmd
           - scrape_recessions.qmd
           - scrape_minimum_wage.qmd
           - scrape_dating.qmd

@@ -24,4 +24,4 @@ wage.to_csv("data/minimum_wage.csv", index=False)
 wage.head()
 ```
 
-This chunk is shown for reference only (`eval: false`), rendering the site doesn't hit Wikipedia. Run `python src/scrape_minimum_wage.py` from the project root to refresh `data/minimum_wage.csv`. See [clean_minimum_wage.qmd](clean_minimum_wage.qmd) for the next step.
+This chunk is shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `python src/scrape_minimum_wage.py` from the project root to refresh `data/minimum_wage.csv`. See [clean_minimum_wage.qmd](clean_minimum_wage.qmd) for the next step.

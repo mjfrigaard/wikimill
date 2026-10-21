@@ -2,7 +2,7 @@
 title: "Clean: social platforms"
 ---
 
-The social platforms CSV from [scrape_social.qmd](scrape_social.qmd) stores monthly active users as text like `"3.070 billion[1][2][3]"` or `"930 million"`. This pulls out the number and the unit separately, converts everything to millions, and collapses the long tail of owning companies down to the five with more than one platform in the table, Meta Platforms, Tencent, ByteDance, Microsoft, and Alphabet, labeling everyone else `"Other"`.
+The social platforms CSV from [scrape_social.qmd](scrape_social.qmd) stores monthly active users as text like `"3.070 billion[1][2][3]"` or `"930 million"`. The code below pulls out the number and the unit separately and converts everything to millions. It also collapses the long tail of owning companies down to the five with more than one platform in the table (Meta Platforms, Tencent, ByteDance, Microsoft, and Alphabet) and labels everyone else `"Other"`.
 
 ```{r}
 #| label: clean-social

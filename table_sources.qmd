@@ -2,7 +2,7 @@
 title: "Table sources"
 ---
 
-Wikipedia pages where the data already lives in a clean HTML table. These scrape directly with `pandas.read_html()`, no text parsing required.
+The Wikipedia pages below already store their data in a clean HTML table. We can scrape these directly with `pandas.read_html()` without any text parsing.
 
 * [List of social networking services](https://en.wikipedia.org/wiki/List_of_social_networking_services): name, type, focus/audience.
 * [List of defunct social networking services](https://en.wikipedia.org/wiki/List_of_defunct_social_networking_services): name, type, focus. Covers the platforms this generation grew up on and lost (Myspace, Vine, AIM).

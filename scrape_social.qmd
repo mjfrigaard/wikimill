@@ -22,4 +22,4 @@ social.to_csv("data/social_platforms.csv", index=False)
 social.head()
 ```
 
-This chunk is shown for reference only (`eval: false`), rendering the site doesn't hit Wikipedia. Run `python src/scrape_social.py` from the project root to refresh `data/social_platforms.csv`. See [clean_social.qmd](clean_social.qmd) for the next step.
+This chunk is shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `python src/scrape_social.py` from the project root to refresh `data/social_platforms.csv`. See [clean_social.qmd](clean_social.qmd) for the next step.

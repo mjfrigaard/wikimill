@@ -3,7 +3,7 @@ title: "Scrape: recessions"
 engine: knitr
 ---
 
-The "List of recessions in the United States" table has a flat header, so renaming the columns is enough. The page is fetched with `requests`, then `pandas.read_html()` finds every table on it and `match=` picks out the one with "GDP decline" in its header.
+The "List of recessions in the United States" table has a flat header, so renaming the columns is the only reshaping it needs. The code below fetches the page with `requests`, then `pandas.read_html()` finds every table on it and `match=` picks out the one with "GDP decline" in its header.
 
 ```{python}
 #| label: scrape-recessions
@@ -25,4 +25,4 @@ recessions.to_csv("data/recessions.csv", index=False)
 recessions.head()
 ```
 
-This chunk is shown for reference only (`eval: false`), rendering the site doesn't hit Wikipedia. Run `python src/scrape_recessions.py` from the project root to refresh `data/recessions.csv`. See [clean_recessions.qmd](clean_recessions.qmd) for the next step.
+This chunk is shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `python src/scrape_recessions.py` from the project root to refresh `data/recessions.csv`. See [clean_recessions.qmd](clean_recessions.qmd) for the next step.
