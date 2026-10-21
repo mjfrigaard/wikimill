@@ -26,4 +26,4 @@ p <- ggplot(dating_top15, aes(
   ) +
   theme_minimal()
 
-ggsave("data/fig_dating.png", p, width = 8, height = 6)
+ggsave("img/fig_dating.png", p, width = 8, height = 6)

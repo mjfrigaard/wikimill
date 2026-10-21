@@ -1,0 +1,40 @@
+---
+title: "Clean: social platforms"
+---
+
+The social platforms CSV from [scrape_social.qmd](scrape_social.qmd) stores monthly active users as text like `"3.070 billion[1][2][3]"` or `"930 million"`. This pulls out the number and the unit separately, converts everything to millions, and collapses the long tail of owning companies down to the five with more than one platform in the table, Meta Platforms, Tencent, ByteDance, Microsoft, and Alphabet, labeling everyone else `"Other"`.
+
+```{r}
+#| label: clean-social
+#| message: false
+#| collapse: true
+library(dplyr)
+library(readr)
+library(stringr)
+
+social_clean <- read_csv("data/social_platforms.csv") |>
+  mutate(
+    mau_value = as.numeric(str_extract(monthly_active_users, "[\\d.]+")),
+    mau_unit = str_extract(monthly_active_users, "billion|million"),
+    mau_millions = case_when(
+      mau_unit == "billion" ~ mau_value * 1000,
+      mau_unit == "million" ~ mau_value,
+      TRUE ~ NA_real_
+    ),
+    company_group = if_else(
+      company %in% c("Meta Platforms", "Tencent", "ByteDance", "Microsoft", "Alphabet Inc."),
+      company, "Other"
+    )
+  ) |>
+  select(-mau_value, -mau_unit) |>
+  filter(!is.na(mau_millions))
+```
+
+```{r}
+#| label: view-social
+#| collapse: true
+write_csv(social_clean, "data/social_platforms_clean.csv")
+social_clean
+```
+
+See [viz_social.qmd](viz_social.qmd) for the chart built on this.

@@ -12,7 +12,8 @@ Live site: https://mjfrigaard.github.io/wikimill/
 * `clean_*.qmd`: the R/dplyr cleaning steps for each topic.
 * `viz_*.qmd`: the `ggplot2` visualizations, built on the cleaned CSVs.
 * `src/`: standalone Python and R scripts that duplicate the scraping, cleaning, and visualization code in the `.qmd` files. The chunks in `scrape_*.qmd` are set to `eval: false`, so rendering the site never hits Wikipedia. Run the scripts in `src/` from the project root to refresh `data/`.
-* `data/`: cached CSVs (raw and cleaned) and figure PNGs, checked in so the site builds without network access.
+* `data/`: cached CSVs (raw and cleaned), checked in so the site builds without network access.
+* `img/`: figure PNGs saved by the `src/viz_*.R` scripts.
 
 ## Scraping method
 

@@ -2,41 +2,88 @@
 title: "Recessions"
 ---
 
-The recessions that shaped when millennials entered the job market, faceted by the generation that was around 22, typical career-entry age, when each one started. Data cleaned in [clean_recessions.qmd](clean_recessions.qmd); this reads the result and plots it.
+The recessions that shaped when each generation entered the job market. A generation "experienced" a recession if it overlapped the years that generation turned 22, typical career-entry age. Data cleaned in [clean_recessions.qmd](clean_recessions.qmd); this reads the result and plots it two ways.
 
 ```{r}
-#| label: fig-recessions
+#| label: read-recessions
 #| message: false
-#| fig-cap: "GDP decline by US recession since 1945, faceted by generation at career-entry age"
-#| fig-height: 7
 library(dplyr)
 library(readr)
 library(ggplot2)
 library(forcats)
 
 recessions <- read_csv("data/recessions_clean.csv") |>
-  mutate(generation = factor(generation, levels = c(
-    "Greatest Generation", "Silent Generation", "Baby Boomers",
-    "Generation X", "Millennials", "Generation Z"
-  )))
+  mutate(generation_label = fct_reorder(generation_label, entry_start))
 
-ggplot(recessions, 
-  aes(
-    x = fct_reorder(name, gdp_decline_pct), 
-    y = gdp_decline_pct, fill = era)) +
-  geom_col() +
-  coord_flip() +
-  # facet_wrap(~ generation, scales = "free_y") +
-  scale_fill_manual(values = c(
-    "Dot-com bust" = "#d62728", "Financial crisis" = "#1f77b4",
-    "COVID-19" = "#2ca02c", "Other" = "grey70"
-  )) +
+era_colors <- c(
+  "Dot-com bust" = "#d62728", "Financial crisis" = "#1f77b4",
+  "COVID-19" = "#2ca02c", "Other" = "grey50"
+)
+```
+
+## Timeline
+
+Each lollipop marks a recession's start date and GDP decline. The shaded bands are each generation's entry window, so the recession sits inside the band of the generation it hit.
+
+```{r}
+#| label: fig-recessions-timeline
+#| fig-cap: "GDP decline by US recession since 1945, against each generation's entry window"
+#| fig-width: 9
+#| fig-height: 5.5
+generations <- distinct(recessions, generation, band_start, band_end, band_mid, band_label, shade)
+
+ggplot(recessions) +
+  geom_rect(
+    data = generations,
+    aes(xmin = band_start, xmax = band_end, ymin = -Inf, ymax = Inf, fill = shade),
+    show.legend = FALSE
+  ) +
+  geom_text(
+    data = generations,
+    aes(x = band_mid, y = 24.5, label = band_label),
+    size = 3, fontface = "bold", lineheight = 0.9
+  ) +
+  geom_segment(aes(x = start_date, xend = start_date, y = 0, yend = gdp_decline_pct, color = era)) +
+  geom_point(aes(x = start_date, y = gdp_decline_pct, color = era), size = 2.5) +
+  geom_text(
+    aes(x = start_date, y = gdp_decline_pct, label = name),
+    angle = 90, hjust = -0.15, size = 2.8
+  ) +
+  scale_fill_manual(values = c("TRUE" = "grey92", "FALSE" = "grey97")) +
+  scale_color_manual(values = era_colors) +
+  scale_x_date(date_breaks = "10 years", date_labels = "%Y", expand = c(0, 0)) +
+  scale_y_continuous(limits = c(0, 26), expand = c(0, 0)) +
   labs(
-    x = NULL, 
-    y = "GDP decline, peak to trough (%)", 
-    fill = "Era",
-    title = "The recessions that shaped each generation's entry into the job market"
+    x = "Recession start", y = "GDP decline, peak to trough (%)", color = "Era",
+    title = "The recessions that shaped each generation's\nentry into the job market",
+    subtitle = "Shaded bands mark when each generation turned 22"
   ) +
   theme_minimal() +
-  theme(strip.text = element_text(face = "bold"))
+  theme(panel.grid.minor = element_blank(), legend.position = "bottom")
+```
+
+## By generation
+
+The same recessions grouped by generation, with each row's height proportional to how many recessions that generation entered the job market during.
+
+```{r}
+#| label: fig-recessions-generation
+#| fig-cap: "GDP decline by US recession since 1945, grouped by generation at career-entry age"
+#| fig-height: 6
+ggplot(recessions, aes(x = gdp_decline_pct, y = fct_reorder(label, gdp_decline_pct), color = era)) +
+  geom_segment(aes(x = 0, xend = gdp_decline_pct, yend = fct_reorder(label, gdp_decline_pct))) +
+  geom_point(size = 2.5) +
+  facet_grid(generation_label ~ ., scales = "free_y", space = "free_y") +
+  scale_color_manual(values = era_colors) +
+  labs(
+    x = "GDP decline, peak to trough (%)", y = NULL, color = "Era",
+    title = "The recessions that shaped each generation's\nentry into the job market"
+  ) +
+  theme_minimal() +
+  theme(
+    strip.text.y = element_text(face = "bold", angle = 0, hjust = 0),
+    panel.grid.major.y = element_blank(),
+    panel.spacing.y = unit(1, "lines"),
+    legend.position = "bottom"
+  )
 ```

@@ -20,18 +20,21 @@ website:
           - scrape_minimum_wage.qmd
           - scrape_dating.qmd
           - scrape_malls.qmd
+          - scrape_social.qmd
       - text: Clean
         menu:
           - clean_recessions.qmd
           - clean_minimum_wage.qmd
           - clean_dating.qmd
           - clean_malls.qmd
+          - clean_social.qmd
       - text: Visualizations
         menu:
           - viz_recessions.qmd
           - viz_minimum_wage.qmd
           - viz_dating.qmd
           - viz_malls.qmd
+          - viz_social.qmd
       - about.qmd
 
 format:

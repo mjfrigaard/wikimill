@@ -18,4 +18,4 @@ p <- ggplot(wage_top20, aes(x = fct_reorder(country, annual_wage_usd), y = annua
   ) +
   theme_minimal()
 
-ggsave("data/fig_minimum_wage.png", p, width = 8, height = 6)
+ggsave("img/fig_minimum_wage.png", p, width = 8, height = 6)

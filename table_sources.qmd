@@ -15,6 +15,7 @@ Wikipedia pages where the data already lives in a clean HTML table. These scrape
 * [Comparison of cross-platform instant messaging clients](https://en.wikipedia.org/wiki/Comparison_of_cross-platform_instant_messaging_clients): Developer, Initial release, Platform, Latest release, license, monthly active users.
 * [iPod, "Models and features" table](https://en.wikipedia.org/wiki/IPod#Models_and_features): Model, Generation, Capacity, Connection, Original release date, Minimum OS to sync, Rated battery life.
 * [Comparison of online dating services](https://en.wikipedia.org/wiki/Comparison_of_online_dating_services): Name, Owner, Registered users, Free, All features free, Hetero/polyamorous connections, Free messaging, STD-notification.
+* [List of most popular social platforms](https://en.wikipedia.org/wiki/List_of_most_popular_social_platforms): Name, Company, Country, Launched, Monthly active users, Other metrics.
 
 ```{mermaid}
 %%| eval: true
@@ -42,3 +43,4 @@ flowchart TB
 * `recessions`: [scrape](scrape_recessions.qmd), [clean](clean_recessions.qmd), [visualize](viz_recessions.qmd).
 * `minimum_wage`: [scrape](scrape_minimum_wage.qmd), [clean](clean_minimum_wage.qmd), [visualize](viz_minimum_wage.qmd).
 * `dating`: [scrape](scrape_dating.qmd), [clean](clean_dating.qmd), [visualize](viz_dating.qmd).
+* `social`: [scrape](scrape_social.qmd), [clean](clean_social.qmd), [visualize](viz_social.qmd).

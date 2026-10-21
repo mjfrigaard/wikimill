@@ -22,4 +22,4 @@ p <- ggplot(malls_counts, aes(x = fct_reorder(status, n), y = n, fill = status))
   theme_minimal() +
   theme(legend.position = "none")
 
-ggsave("data/fig_malls.png", p, width = 8, height = 5)
+ggsave("img/fig_malls.png", p, width = 8, height = 5)
