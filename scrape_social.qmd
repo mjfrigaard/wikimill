@@ -9,6 +9,8 @@ The "List of most popular social platforms" page has three tables: a 1-row stub,
 
 ## R
 
+In R, `httr2` fetches the page, `rvest::html_table()` parses every table on it, and `Filter()` keeps the one with a `Country[b]` column and no `No.` column.
+
 ```{r}
 #| label: scrape-social-r
 #| eval: false
@@ -30,6 +32,8 @@ head(social)
 
 ## Python
 
+In Python, `requests` fetches the page, `pandas.read_html()` parses every table, and `next()` returns the first one that passes the same check.
+
 ```{python}
 #| label: scrape-social-py
 #| eval: false
@@ -50,9 +54,15 @@ social.head()
 :::
 
 ::: {.callout-note}
-## Either works
 
-Both versions pick the table by its column names, so the code is nearly line for line the same.
+## Which language should I use?
+
+Both versions pick the table by its column names, so the code is nearly line for line the same:
+
+* `rvest::html_table()` returns a list of tibbles, and `Filter()` tests each one's `names()`.
+
+* `pandas.read_html()` returns a list of DataFrames, and a generator expression tests each one's `columns`.
+
 :::
 
 These chunks are shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `Rscript src/scrape_social.R` or `python src/scrape_social.py` from the project root to refresh `data/social_platforms.csv`. See [clean_social.qmd](clean_social.qmd) for the next step.

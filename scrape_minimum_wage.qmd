@@ -3,11 +3,13 @@ title: "Scrape: minimum wage"
 engine: knitr
 ---
 
-The "List of countries by minimum wage" table has a nested header: the annual and hourly figures are each split into nominal and PPP sub-columns. `pandas` reads this as a `MultiIndex`, so we flatten it into single column names before saving. `rvest` reads only the top header row, so the R version rebuilds the same names from the first data row.
+The "List of countries by minimum wage" table has a nested header: the annual and hourly figures are each split into nominal and PPP sub-columns.
 
 ::: {.panel-tabset group="language"}
 
 ## R
+
+`rvest` reads only the top header row, so the R version rebuilds the same names from the first data row.
 
 ```{r}
 #| label: scrape-minimum-wage-r
@@ -34,6 +36,8 @@ head(wage)
 
 ## Python
 
+`pandas` reads this as a `MultiIndex`, so we flatten it into single column names before saving.
+
 ```{python}
 #| label: scrape-minimum-wage-py
 #| eval: false
@@ -56,9 +60,15 @@ wage.head()
 :::
 
 ::: {.callout-tip}
-## pandas has the edge
 
-`read_html()` reads the two header rows as a `MultiIndex`, and its default `thousands=","` turns `4,637` into a number. `html_table()` keeps only the top header row, so the second row lands in the data (and `Annual` and `Hourly` each appear twice), and the comma-grouped numbers stay as text. The R version pastes the first data row onto the names, drops it, then runs `parse_number()` on the wage columns.
+## Which language should I use? 
+
+**`pandas` has the edge**
+
+* `pandas.read_html()` reads the two header rows as a `MultiIndex`, and its default `thousands=","` turns `4,637` into a number. 
+
+* `rvest::html_table()` keeps only the top header row, so the second row lands in the data (and `Annual` and `Hourly` each appear twice), and the comma-grouped numbers stay as text. The R version pastes the first data row onto the names, drops it, then runs `parse_number()` on the wage columns.
+
 :::
 
 These chunks are shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `Rscript src/scrape_minimum_wage.R` or `python src/scrape_minimum_wage.py` from the project root to refresh `data/minimum_wage.csv`. See [clean_minimum_wage.qmd](clean_minimum_wage.qmd) for the next step.

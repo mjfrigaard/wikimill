@@ -9,6 +9,8 @@ The "Comparison of online dating services" table mixes a registered-user count w
 
 ## R
 
+In R, `httr2` fetches the page, `rvest::html_table()` parses every table on it, and `Filter()` keeps the one with "Registered users" in its header.
+
 ```{r}
 #| label: scrape-dating-r
 #| eval: false
@@ -32,6 +34,8 @@ head(dating)
 ```
 
 ## Python
+
+In Python, `requests` fetches the page, then `pandas.read_html()` finds every table and `match=` picks out the same one.
 
 ```{python}
 #| label: scrape-dating-py
@@ -57,9 +61,17 @@ dating.head()
 :::
 
 ::: {.callout-note}
-## Either works
 
-`pandas.read_html(match=)` and `Filter()` over `html_table()` do the same job here: keep the table whose header mentions "Registered users".
+## Which language should I use?
+
+Both versions take about the same code and keep the same table:
+
+* `rvest::html_table()` returns every table on the page, and `Filter()` keeps the one whose header mentions "Registered users".
+
+* `pandas.read_html()` does the same filtering in one step with `match=`.
+
+The raw text stays as-is in both CSVs, so the cleaning step parses the same strings either way.
+
 :::
 
 These chunks are shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `Rscript src/scrape_dating.R` or `python src/scrape_dating.py` from the project root to refresh `data/dating_services.csv`.

@@ -2,11 +2,14 @@
 title: "List sources"
 ---
 
-The Wikipedia pages below store their data in a bulleted list or a category rather than a table, so they need a different scraping method than `rvest::html_table()` or `pandas.read_html()`.
+The Wikipedia pages below store their data in a bulleted list or a category rather than a table, so they need different scraping methods. 
 
 * [Category:Defunct shopping malls in the United States](https://en.wikipedia.org/wiki/Category:Defunct_shopping_malls_in_the_United_States): no "List of" article exists for closed malls, so this category is the closest substitute, with [Demolished](https://en.wikipedia.org/wiki/Category:Demolished_shopping_malls_in_the_United_States) and [Abandoned](https://en.wikipedia.org/wiki/Category:Abandoned_shopping_malls_in_the_United_States) subcategories.
+
 * [List of defunct department stores of the United States](https://en.wikipedia.org/wiki/List_of_defunct_department_stores_of_the_United_States): bulleted by state, with store name, location, and closure notes. The entries need manual structuring into columns.
+
 * [Timeline of malware](https://en.wikipedia.org/wiki/Timeline_of_malware): a chronological bulleted list grouped by decade, then year. Covers ILOVEYOU, Melissa, and Code Red.
+
 * [List of companies affected by the dot-com bubble](https://en.wikipedia.org/wiki/List_of_companies_affected_by_the_dot-com_bubble): a bulleted list of companies, each with a prose description of its IPO, stock performance, or collapse.
 
 ```{mermaid}
@@ -20,9 +23,9 @@ The Wikipedia pages below store their data in a bulleted list or a category rath
 flowchart TB
     cat(["<strong>Wikipedia category</strong><br/>page links, no table"]) -->|"i. Query"| api["MediaWiki API<br/><code>list=categorymembers</code>"]
     api -->|"ii. Paginate"| json["JSON response<br/><code>cmcontinue</code>"]
-    json -->|"iii. Save raw"| csv[("<code>data/*.csv</code>")]
-    csv -->|"iv. Dedupe + label"| clean["<code>dplyr</code> or <code>pandas</code><br/>dedupe + count"]
-    clean -->|"v. Save clean"| cleancsv[("<code>data/*_clean.csv</code>")]
+    json -->|"iii. Save raw"| csv[("<code>data/</code><br><code>*.csv</code>")]
+    csv -->|"iv. Dedupe + label"| clean["<code>dplyr</code> or <code>pandas</code> dedupe + count"]
+    clean -->|"v. Save clean"| cleancsv[("<code>data/</code><br><code>*_clean.csv</code>")]
 
     style cat fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
     style api fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5

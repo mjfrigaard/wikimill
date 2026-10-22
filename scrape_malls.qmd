@@ -11,6 +11,8 @@ The code below fetches the defunct malls category and its two subcategories, the
 
 ## R
 
+In R, `httr2` sends the API request, and `req_perform_iterative()` with `iterate_with_cursor()` follows the `cmcontinue` token until the category runs out of pages. `resps_data()` then pulls the titles out of every response.
+
 ```{r}
 #| label: scrape-malls-r
 #| eval: false
@@ -53,6 +55,8 @@ head(malls)
 
 ## Python
 
+In Python, `requests` sends the API request inside a `while` loop that copies the `cmcontinue` token into the next request until a response has no `continue` key.
+
 ```{python}
 #| label: scrape-malls-py
 #| eval: false
@@ -92,9 +96,15 @@ malls.head()
 :::
 
 ::: {.callout-tip}
-## httr2 has the edge
 
-`req_perform_iterative()` with `iterate_with_cursor()` handles the `cmcontinue` loop for us, and `httr2` also ships `req_throttle()` and `req_retry()` for polite, rate-limited requests. With `requests`, the pagination loop, throttling, and retries are all code we write ourselves.
+## Which language should I use?
+
+**`httr2` has the edge**
+
+* `httr2::req_perform_iterative()` with `iterate_with_cursor()` handles the `cmcontinue` loop for us, and `httr2` also ships `req_throttle()` and `req_retry()` for polite, rate-limited requests.
+
+* With `requests`, the pagination loop, throttling, and retries are all code we write ourselves.
+
 :::
 
 These chunks are shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `Rscript src/scrape_malls.R` or `python src/scrape_malls.py` from the project root to refresh `data/defunct_malls.csv`. See [clean_malls.qmd](clean_malls.qmd) for the next step.

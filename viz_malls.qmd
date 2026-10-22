@@ -1,5 +1,7 @@
 ---
 title: "Malls"
+execute:
+  eval: true
 ---
 
 The chart below shows how American malls in the defunct category met their end. The code reads the data cleaned in [clean_malls.qmd](clean_malls.qmd) and plots it.

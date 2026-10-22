@@ -2,11 +2,11 @@
 title: "wikimill"
 ---
 
-Wikipedia "List of" pages and categories make good raw material for data visualization: sortable tables, decades of history, and a built-in audience of people who already care about the topic.
+This site contains various Wikipedia "List of" pages and categories that serve as good raw material for data visualization: sortable tables, decades of history, and a built-in audience of people who already care about the topics. 
 
-This site scrapes and cleans a few of those tables with both R and Python, then visualizes them with R and `ggplot2`. It covers two themes: topics that shaped the millennial generation (recessions, wage stagnation, platforms that came and went) and Y2K-era internet nostalgia (early browsers, worms, instant messengers).
+You'll find instructions for scraping and cleaning a few of those tables with both R and Python, then visualizes them with R and `ggplot2`. It covers two themes: topics that shaped the millennial generation (recessions, wage stagnation, platforms that came and went) and Y2K-era internet nostalgia (early browsers, worms, instant messengers).
 
 * [Table sources](table_sources.qmd): Wikipedia pages scraped directly with `rvest::html_table()` or `pandas.read_html()`.
 * [List sources](list_sources.qmd): Wikipedia bulleted lists and categories, scraped through the MediaWiki API.
-* Each topic has a `scrape_*.qmd` page and a `clean_*.qmd` page (each with R and Python tabs), and a `viz_*.qmd` page (`ggplot2`).
-* [Recessions](viz_recessions.qmd), [Minimum wage](viz_minimum_wage.qmd), [Dating services](viz_dating.qmd), [Malls](viz_malls.qmd), and [Social platforms](viz_social.qmd): the `ggplot2` visualizations built on the cleaned data.
+* Each topic has a 'scraping' page and a 'cleaning' page with R and Python tabs. The visualization page only uses R and `ggplot2`. 
+* Examples include [Recessions](viz_recessions.qmd), [Minimum wage](viz_minimum_wage.qmd), [Dating services](viz_dating.qmd), [Malls](viz_malls.qmd), and [Social platforms](viz_social.qmd): the `ggplot2` visualizations built on the cleaned data.

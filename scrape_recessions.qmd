@@ -3,11 +3,13 @@ title: "Scrape: recessions"
 engine: knitr
 ---
 
-The "List of recessions in the United States" table has a flat header, so renaming the columns is the only reshaping it needs. In R, `httr2` fetches the page, `rvest::html_table()` parses every table on it, and `Filter()` keeps the one with "GDP decline" in its header. In Python, `requests` fetches the page, then `pandas.read_html()` finds every table and `match=` picks out the same one.
+The "List of recessions in the United States" table has a flat header, so renaming the columns is the only reshaping it needs. 
 
 ::: {.panel-tabset group="language"}
 
 ## R
+
+In R, `httr2` fetches the page, `rvest::html_table()` parses every table on it, and `Filter()` keeps the one with "GDP decline" in its header. 
 
 ```{r}
 #| label: scrape-recessions-r
@@ -33,6 +35,8 @@ head(recessions)
 
 ## Python
 
+In Python, `requests` fetches the page, then `pandas.read_html()` finds every table and `match=` picks out the same one.
+
 ```{python}
 #| label: scrape-recessions-py
 #| eval: false
@@ -56,9 +60,17 @@ recessions.head()
 :::
 
 ::: {.callout-note}
-## Either works
 
-Both versions take about the same code. One difference shows up in the raw text: `html_table()` joins text across a `<br>` tag without a space (`3 years1 month`), while `read_html()` inserts one. The cleaning step only parses `period_range` and the percentages, so both CSVs produce the same cleaned table.
+## Which language should I use? 
+
+Both versions take about the same code, but one difference shows up in the raw text: 
+
+* `rvest::html_table()` joins text across a `<br>` tag without a space (`3 years1 month`), 
+
+* `pandas.read_html()` inserts one. 
+
+The cleaning step only parses `period_range` and the percentages, so both CSVs produce the same cleaned table.
+
 :::
 
 These chunks are shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `Rscript src/scrape_recessions.R` or `python src/scrape_recessions.py` from the project root to refresh `data/recessions.csv`. See [clean_recessions.qmd](clean_recessions.qmd) for the next step.

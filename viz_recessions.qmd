@@ -1,5 +1,7 @@
 ---
 title: "Recessions"
+execute:
+  eval: true
 ---
 
 This page plots the recessions that shaped when each generation entered the job market. A generation "experienced" a recession if the recession overlapped the years that generation turned 22, the typical career-entry age. The code below reads the data cleaned in [clean_recessions.qmd](clean_recessions.qmd) and plots it two ways.

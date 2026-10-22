@@ -2,19 +2,30 @@
 title: "Table sources"
 ---
 
-The Wikipedia pages below already store their data in a clean HTML table. We can scrape these directly with `rvest::html_table()` or `pandas.read_html()` without any text parsing.
+The Wikipedia pages below already store their data in a clean HTML table, which makes them easier to scrape with `rvest::html_table()` or `pandas.read_html()` (without any text parsing).
 
 * [List of social networking services](https://en.wikipedia.org/wiki/List_of_social_networking_services): name, type, focus/audience.
+
 * [List of defunct social networking services](https://en.wikipedia.org/wiki/List_of_defunct_social_networking_services): name, type, focus. Covers the platforms this generation grew up on and lost (Myspace, Vine, AIM).
+
 * [List of recessions in the United States](https://en.wikipedia.org/wiki/List_of_recessions_in_the_United_States): name, period, duration, peak unemployment, GDP decline. Spans the dot-com bust and the 2008 financial crisis.
+
 * [List of cryptocurrencies](https://en.wikipedia.org/wiki/List_of_cryptocurrencies): year introduced, currency, founder, consensus mechanism.
+
 * [List of countries by minimum wage](https://en.wikipedia.org/wiki/List_of_countries_by_minimum_wage): country, nominal and PPP (purchasing power parity) annual/hourly wage, percent of GDP per capita.
+
 * [List of Disney Channel original films](https://en.wikipedia.org/wiki/List_of_Disney_Channel_Original_Movies): year, film, premiere date, US viewership in millions.
+
 * [History of the web browser](https://en.wikipedia.org/wiki/History_of_the_web_browser): a "Historical web browsers" table with Browser, Years, and per-OS support columns.
+
 * [List of search engines](https://en.wikipedia.org/wiki/List_of_search_engines): a "Defunct or acquired" table with Name, Backend ownership, and Demise columns. Covers the Ask Jeeves, AltaVista, and Lycos era.
+
 * [Comparison of cross-platform instant messaging clients](https://en.wikipedia.org/wiki/Comparison_of_cross-platform_instant_messaging_clients): Developer, Initial release, Platform, Latest release, license, monthly active users.
+
 * [iPod, "Models and features" table](https://en.wikipedia.org/wiki/IPod#Models_and_features): Model, Generation, Capacity, Connection, Original release date, Minimum OS to sync, Rated battery life.
+
 * [Comparison of online dating services](https://en.wikipedia.org/wiki/Comparison_of_online_dating_services): Name, Owner, Registered users, Free, All features free, Hetero/polyamorous connections, Free messaging, STD-notification.
+
 * [List of most popular social platforms](https://en.wikipedia.org/wiki/List_of_most_popular_social_platforms): Name, Company, Country, Launched, Monthly active users, Other metrics.
 
 ```{mermaid}
@@ -23,19 +34,20 @@ The Wikipedia pages below already store their data in a clean HTML table. We can
 %%| fig-height: 3
 %%| fig-align: 'center'
 %%| fig-caption: 'Table scraping method'
-%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
 
 flowchart TB
-    wiki(["<strong>Wikipedia page</strong><br/>HTML table"]) -->|"i. Request"| scrape["<code>httr2</code> + <code>rvest</code><br/>or <code>requests</code> + <code>pandas</code>"]
-    scrape -->|"ii. Save raw"| csv[("<code>data/*.csv</code>")]
-    csv -->|"iii. Clean"| clean["<code>dplyr</code> or <code>pandas</code><br/>clean + reshape"]
-    clean -->|"iv. Save clean"| cleancsv[("<code>data/*_clean.csv</code>")]
+    wiki(["<strong>Wikipedia page</strong><br/>HTML table"]) -->|"i. Request"| scrape["<code>httr2</code>/<code>rvest</code><br/>or <code>requests</code>/<code>pandas</code>"]
+    scrape -->|"ii. Save raw"| csv[("<code>data/</code><br><code>*.csv</code>")]
+    csv -->|"iii. Clean"| clean["<code>dplyr</code> or <code>pandas</code> clean + reshape"]
+    clean -->|"iv. Save clean"| cleancsv[("<code>data/</code><br><code>*_clean.csv</code>")]
 
     style wiki fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
     style scrape fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
     style csv fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
     style clean fill:#4CBB9D,color:#FFFFFF,rx:5,ry:5
     style cleancsv fill:#FFFFFF,color:#000000,stroke:#333,stroke-width:1px
+
 ```
 
 ## Scraped topics

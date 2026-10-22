@@ -3,7 +3,25 @@ title: "Scraping overview"
 engine: knitr
 ---
 
-Before scraping a website, check what you're allowed to collect, how fast you can collect it, and whether the site offers a better way to get the data. Wikipedia is one of the better cases: its content is openly licensed, and the Wikimedia Foundation actively supports reuse. Still, "allowed" doesn't mean "anything goes." This page covers the rules and practices behind the scraping code on this site, and each `scrape_*.qmd` page applies them to one topic.
+Before we scrape a website, we should check what we're allowed to collect, how fast we can collect it, and whether the site offers a better way to get it. Wikipedia is one of the better cases: its content is openly licensed, and the Wikimedia Foundation actively supports reuse. Still, "allowed" doesn't mean "anything goes." This page covers the rules and practices behind the scraping code on this site, and the scraping code applies them to one topic.
+
+You can find the scraping scripts in the [`src/` folder](https://github.com/mjfrigaard/wikimill/tree/main/src) of this repo. 
+
+```bash
+src/
+├── scrape_dating.py
+├── scrape_dating.R
+├── scrape_malls.py
+├── scrape_malls.R
+├── scrape_minimum_wage.py
+├── scrape_minimum_wage.R
+├── scrape_recessions.py
+├── scrape_recessions.R
+├── scrape_social.py
+└── scrape_social.R
+
+1 directory, 10 files
+```
 
 ## What the law and the licenses allow
 
@@ -46,7 +64,7 @@ You don't have to build the plumbing for these yourself. Libraries like `pywikib
 %%| fig-height: 7
 %%| fig-align: 'center'
 %%| fig-caption: 'Choosing a Wikipedia data source'
-%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
 
 flowchart TB
     start(["<strong>What data do you need?</strong>"]) --> bulk{"Large scale?<br/>corpora, link graphs"}
@@ -151,7 +169,7 @@ A few habits keep your traffic well below that line:
 %%| fig-height: 7
 %%| fig-align: 'center'
 %%| fig-caption: 'A polite request loop'
-%%{init: {'theme': 'base', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
+%%{init: {'theme': 'default', 'themeVariables': { 'fontFamily': 'monospace', "fontSize":"16px", "darkMode":false}}}%%
 
 flowchart TB
     send["Send one request<br/><code>User-Agent</code> + <code>maxlag</code>"] --> status{"Response<br/>status?"}
@@ -190,12 +208,12 @@ Access controls are the other boundary. Don't circumvent logins, paywalls, CAPTC
 
 ## Checklist for a Wikipedia project
 
-1. Ask whether a dump or Wikidata already contains what you need. It usually does.
-2. If you use the API, set a proper `User-Agent`, use `maxlag`, batch requests, go serially, and handle errors gracefully.
-3. If you must scrape HTML, keep it small, honor `robots.txt`, throttle to about one request per second or slower, and cache aggressively.
-4. Store the retrieval date and revision IDs alongside your data.
-5. Attribute properly under CC BY-SA in whatever you publish.
-6. For heavy or commercial use, look at Wikimedia Enterprise or consider donating to the Foundation. The infrastructure you're using is donor-funded.
+- [ ] Ask whether a dump or Wikidata already contains what you need. It usually does.
+    - [ ] If you use the API, set a proper `User-Agent`, use `maxlag`, batch requests, go serially, and handle errors gracefully.
+    - [ ] If you must scrape HTML, keep it small, honor `robots.txt`, throttle to about one request per second or slower, and cache aggressively.
+- [ ] Store the retrieval date and revision IDs alongside your data.
+- [ ] Attribute properly under CC BY-SA in whatever you publish.
+- [ ] For heavy or commercial use, look at Wikimedia Enterprise or consider donating to the Foundation. The infrastructure you're using is donor-funded.
 
 ## Recap
 
