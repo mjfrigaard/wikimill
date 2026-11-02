@@ -22,6 +22,10 @@ generations["band_mid"] = (
     generations["band_start"] + (generations["band_end"] - generations["band_start"]) / 2
 ).dt.floor("D")
 generations["shade"] = (generations.index + 1) % 2 == 0
+generations["workforce_start"] = generations["birth_start"] + 18
+generations["workforce_end"] = generations["birth_end"] + 18
+generations["bar_start"] = pd.to_datetime(generations["workforce_start"].clip(lower=1944).astype(str) + "-01-01")
+generations["bar_end"] = pd.to_datetime((generations["workforce_end"].clip(upper=2025) + 1).astype(str) + "-01-01")
 
 names = {
     1945: "Demobilization", 1948: "Tightening", 1953: "Korea", 1957: "Eisenhower",

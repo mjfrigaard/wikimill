@@ -3,9 +3,32 @@ title: "Scrape: minimum wage"
 engine: knitr
 ---
 
-The "List of countries by minimum wage" table has a nested header: the annual and hourly figures are each split into nominal and PPP sub-columns.
+The [List of countries by minimum wage](https://en.wikipedia.org/wiki/List_of_countries_by_minimum_wage) table has a nested header: the annual and hourly figures are each split into nominal and PPP sub-columns.
 
 ::: {.panel-tabset group="language"}
+
+## Python
+
+`pandas` reads this as a `MultiIndex`, so we flatten it into single column names before saving. 
+
+```{python}
+#| label: scrape-minimum-wage-py
+#| eval: false
+import io
+import pandas as pd
+import requests
+
+wage_html = requests.get(
+    "https://en.wikipedia.org/wiki/List_of_countries_by_minimum_wage",
+    headers={"User-Agent": "wikimill-project/0.1"}
+).text
+tables = pd.read_html(io.StringIO(wage_html), match="Minimum wage")
+wage = tables[0]
+wage.columns = ["_".join(c for c in col if "Unnamed" not in c).strip("_")
+                for col in wage.columns.to_flat_index()]
+wage.to_csv("data/minimum_wage.csv", index=False)
+wage.head()
+```
 
 ## R
 
@@ -34,41 +57,14 @@ write_csv(wage, "data/minimum_wage.csv")
 head(wage)
 ```
 
-## Python
-
-`pandas` reads this as a `MultiIndex`, so we flatten it into single column names before saving.
-
-```{python}
-#| label: scrape-minimum-wage-py
-#| eval: false
-import io
-import pandas as pd
-import requests
-
-wage_html = requests.get(
-    "https://en.wikipedia.org/wiki/List_of_countries_by_minimum_wage",
-    headers={"User-Agent": "wikimill-project/0.1"}
-).text
-tables = pd.read_html(io.StringIO(wage_html), match="Minimum wage")
-wage = tables[0]
-wage.columns = ["_".join(c for c in col if "Unnamed" not in c).strip("_")
-                for col in wage.columns.to_flat_index()]
-wage.to_csv("data/minimum_wage.csv", index=False)
-wage.head()
-```
-
 :::
 
 ::: {.callout-tip}
 
-## Which language should I use? 
+## pandas has the edge
 
-**`pandas` has the edge**
-
-* `pandas.read_html()` reads the two header rows as a `MultiIndex`, and its default `thousands=","` turns `4,637` into a number. 
-
-* `rvest::html_table()` keeps only the top header row, so the second row lands in the data (and `Annual` and `Hourly` each appear twice), and the comma-grouped numbers stay as text. The R version pastes the first data row onto the names, drops it, then runs `parse_number()` on the wage columns.
+`read_html()` reads the two header rows as a `MultiIndex`, and its default `thousands=","` turns `4,637` into a number. `html_table()` keeps only the top header row, so the second row lands in the data (and `Annual` and `Hourly` each appear twice), and the comma-grouped numbers stay as text. The R version pastes the first data row onto the names, drops it, then runs `parse_number()` on the wage columns.
 
 :::
 
-These chunks are shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `Rscript src/scrape_minimum_wage.R` or `python src/scrape_minimum_wage.py` from the project root to refresh `data/minimum_wage.csv`. See [clean_minimum_wage.qmd](clean_minimum_wage.qmd) for the next step.
+The code above is shown for reference only. Run `Rscript src/scrape_minimum_wage.R` or `python src/scrape_minimum_wage.py` from the project root to refresh `data/minimum_wage.csv`. See [clean_minimum_wage.qmd](clean_minimum_wage.qmd) for the next step.

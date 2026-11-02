@@ -3,7 +3,7 @@ title: "Scrape: dating services"
 engine: knitr
 ---
 
-The "Comparison of online dating services" table mixes a registered-user count with a reporting year in one free-text cell, and the "Free" and "All features free" columns hold full sentences rather than a plain Yes/No. We save the raw columns as-is here; the parsing happens in [clean_dating.qmd](clean_dating.qmd).
+The [Comparison of online dating services](https://en.wikipedia.org/wiki/Comparison_of_online_dating_services) table mixes a registered-user count with a reporting year in one free-text cell, and the "Free" and "All features free" columns hold full sentences rather than a plain Yes/No. We save the raw columns as-is here; the parsing happens in [clean_dating.qmd](clean_dating.qmd).
 
 ::: {.panel-tabset group="language"}
 
@@ -74,4 +74,4 @@ The raw text stays as-is in both CSVs, so the cleaning step parses the same stri
 
 :::
 
-These chunks are shown for reference only (`eval: false`), so rendering the site doesn't hit Wikipedia. Run `Rscript src/scrape_dating.R` or `python src/scrape_dating.py` from the project root to refresh `data/dating_services.csv`.
+The code above is shown for reference only. Run `Rscript src/scrape_dating.R` or `python src/scrape_dating.py` from the project root to refresh `data/dating_services.csv`.

@@ -27,8 +27,8 @@ src/
 
 Being able to download a page doesn't make scraping it acceptable, so start with the license. Wikipedia text is released under the [Creative Commons Attribution-ShareAlike 4.0 license](https://en.wikipedia.org/wiki/Wikipedia:Text_of_the_Creative_Commons_Attribution-ShareAlike_4.0_International_License) (CC BY-SA 4.0), and older content is also covered by the GNU Free Documentation License (GFDL). Both let you copy, redistribute, and modify the text, as long as you meet two conditions:
 
-* Attribution: credit the article and link back to it. The page history lists its contributors.
-* Share alike: release any derivative work under the same license.
+* **Attribution**: credit the article and link back to it. The page history lists its contributors.
+* **Share alike**: release any derivative work under the same license.
 
 Each sources page on this site links to the article it scraped. Images and other media carry their own licenses, so check each file on Wikimedia Commons before reusing it.
 
@@ -41,6 +41,8 @@ Other sites are less clear-cut, and the law depends on where you are. In the US,
 Beyond the license, Wikimedia sets rules for how programs reach its servers. The first is the simplest: don't bulk-crawl the HTML pages. Wikipedia's own documentation says, "Please do not use a web crawler to download large numbers of articles." The data sources in the next section exist so you don't have to.
 
 Every request should also identify who sent it. Wikimedia's [User-Agent policy](https://foundation.wikimedia.org/wiki/Policy:User-Agent_policy) makes a descriptive `User-Agent` header a hard requirement: it should name your tool and include contact information, such as `MyResearchBot/1.0 (https://example.org/bot; me@example.org)`. Generic agents (like the `requests` default) and agents that impersonate a browser may be blocked. An honest agent works in your favor, too, because it lets site operators reach you instead of simply blocking you.
+
+### `robots.txt`
 
 Finally, honor `robots.txt`. A site's `robots.txt` file (e.g., <https://en.wikipedia.org/robots.txt>) lists the paths automated clients should stay away from. On Wikipedia, article pages under `/wiki/` are open, but `/w/`, `Special:` pages, edit and history views, and certain namespaces are disallowed. Neither `robots.txt` nor a site's Terms of Use is legally binding everywhere, but respect both anyway; they signal what the owner wants.
 
@@ -147,9 +149,10 @@ while True:
 :::
 
 ::: {.callout-tip}
-## httr2 has the edge
+## In my opinion, `httr2` has the edge
 
-`iterate_with_cursor()` reads the `cmcontinue` token and builds the next request for us. With `requests`, we write the loop and the stopping rule ourselves.
+`httr2::iterate_with_cursor()` reads the `cmcontinue` token and builds the next request for us. With Python's `requests`, we write the loop and the stopping rule ourselves.
+
 :::
 
 ## Making polite requests
