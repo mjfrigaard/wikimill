@@ -32,6 +32,7 @@ flowchart TB
 
 ```{r}
 #| label: clean-minimum-wage
+#| eval: true
 #| message: false
 #| collapse: true
 library(dplyr)
@@ -46,6 +47,7 @@ wage_clean <- read_csv("data/minimum_wage.csv") |>
 
 ```{r}
 #| label: view-minimum-wage
+#| eval: true
 #| collapse: true
 write_csv(wage_clean, "data/minimum_wage_clean.csv")
 wage_clean
@@ -55,6 +57,7 @@ wage_clean
 
 ```{python}
 #| label: clean-minimum-wage-py
+#| eval: true
 import pandas as pd
 
 wage = pd.read_csv("data/minimum_wage.csv")

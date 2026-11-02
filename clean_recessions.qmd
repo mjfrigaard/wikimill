@@ -13,10 +13,12 @@ The generation table also carries the columns for drawing each entry window as a
 * `band_label`: the generation name split over two lines.
 * `shade`: alternates so neighboring bands are distinguishable.
 
-It also carries the age each generation entered the workforce, drawn as a horizontal bar above the bands. Here we use age 18, the end of high school, instead of 22:
+It also carries each generation's working years, drawn as a horizontal bar above the bands. A bar starts when the generation's oldest members turned 18 (the end of high school) and ends when its youngest members reach the Social Security [full retirement age](https://www.ssa.gov/benefits/retirement/planner/agereduction.html) for their birth year:
 
 * `workforce_start` and `workforce_end`: the birth-year bracket plus 18.
-* `bar_start` and `bar_end`: the same years as dates, clipped to 1944 through 2025 like the bands.
+* `retirement_age`: 65 for anyone born in 1937 or earlier, 66 for 1943 through 1954, and 67 for 1960 or later. The years in between step up by two months per birth year, but no generation's last birth year falls in those gaps.
+* `retirement_year`: the last birth year plus `retirement_age`.
+* `bar_start` and `bar_end`: `workforce_start` and `retirement_year` as dates, clipped to 1944 through 2025 like the bands.
 
 `period_range` holds the start and end month as text (e.g., "December 2007 – June 2009", sometimes with footnote markers). The code strips the footnotes, then parses each month into `start_date` and `end_date` (the first of the month, matching NBER's monthly peak and trough dates). `start_year` and `end_year` come from those dates, and `label` combines the name with the year range for the chart.
 
@@ -70,6 +72,7 @@ flowchart TB
 
 ```{r}
 #| label: clean-recessions
+#| eval: true
 #| message: false
 #| collapse: true
 library(dplyr)
@@ -95,8 +98,10 @@ generations <- tibble(
     shade = row_number() %% 2 == 0,
     workforce_start = birth_start + 18L,
     workforce_end = birth_end + 18L,
+    retirement_age = case_when(birth_end <= 1937 ~ 65L, birth_end <= 1954 ~ 66L, TRUE ~ 67L),
+    retirement_year = birth_end + retirement_age,
     bar_start = as.Date(paste0(pmax(workforce_start, 1944L), "-01-01")),
-    bar_end = as.Date(paste0(pmin(workforce_end, 2025L) + 1L, "-01-01")),
+    bar_end = as.Date(paste0(pmin(retirement_year, 2025L) + 1L, "-01-01")),
     generation = factor(generation, levels = generation),
     generation_label = factor(generation_label, levels = generation_label)
   )
@@ -144,6 +149,7 @@ recessions <- read_csv("data/recessions.csv") |>
 
 ```{r}
 #| label: view-recessions
+#| eval: true
 #| collapse: true
 write_csv(recessions, "data/recessions_clean.csv")
 recessions
@@ -153,6 +159,7 @@ recessions
 
 ```{python}
 #| label: clean-recessions-py
+#| eval: true
 import pandas as pd
 
 generations = pd.DataFrame({
@@ -178,8 +185,12 @@ generations["band_mid"] = (
 generations["shade"] = (generations.index + 1) % 2 == 0
 generations["workforce_start"] = generations["birth_start"] + 18
 generations["workforce_end"] = generations["birth_end"] + 18
+generations["retirement_age"] = 67
+generations.loc[generations["birth_end"] <= 1954, "retirement_age"] = 66
+generations.loc[generations["birth_end"] <= 1937, "retirement_age"] = 65
+generations["retirement_year"] = generations["birth_end"] + generations["retirement_age"]
 generations["bar_start"] = pd.to_datetime(generations["workforce_start"].clip(lower=1944).astype(str) + "-01-01")
-generations["bar_end"] = pd.to_datetime((generations["workforce_end"].clip(upper=2025) + 1).astype(str) + "-01-01")
+generations["bar_end"] = pd.to_datetime((generations["retirement_year"].clip(upper=2025) + 1).astype(str) + "-01-01")
 
 names = {
     1945: "Demobilization", 1948: "Tightening", 1953: "Korea", 1957: "Eisenhower",

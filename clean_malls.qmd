@@ -32,6 +32,7 @@ flowchart TB
 
 ```{r}
 #| label: clean-malls
+#| eval: true
 #| message: false
 library(dplyr)
 library(readr)
@@ -50,6 +51,7 @@ malls_clean |> count(status, sort = TRUE)
 
 ```{python}
 #| label: clean-malls-py
+#| eval: true
 import pandas as pd
 
 malls = pd.read_csv("data/defunct_malls.csv")

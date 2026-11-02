@@ -21,8 +21,9 @@ gen_colors <- c(
 # Timeline: one lollipop per recession, shaded by generation entry window
 generations <- distinct(
   recessions, generation, band_start, band_end, band_mid, band_label, shade,
-  workforce_start, workforce_end, bar_start, bar_end
-)
+  workforce_start, retirement_year, bar_start, bar_end
+) |>
+  mutate(bar_y = 26 + 2 * (n() - rank(workforce_start)))
 
 p_timeline <- ggplot(recessions) +
   geom_rect(
@@ -32,29 +33,26 @@ p_timeline <- ggplot(recessions) +
   ) +
   geom_text(
     data = generations,
-    aes(x = band_mid, y = 30.5, label = band_label, color = generation),
+    aes(x = band_mid, y = 38.5, label = band_label, color = generation),
     size = 3.8, fontface = "bold", lineheight = 0.9
   ) +
   geom_segment(
     data = generations,
     aes(
-      x = bar_start, xend = bar_end, y = if_else(shade, 28, 26), yend = if_else(shade, 28, 26),
+      x = bar_start, xend = bar_end, y = bar_y, yend = bar_y,
       color = generation
     ),
     linewidth = 1.5
   ) +
   geom_text(
     data = generations,
-    aes(x = bar_start, y = if_else(shade, 28, 26) + 0.7, label = workforce_start, color = generation),
+    aes(x = bar_start, y = bar_y + 0.7, label = workforce_start, color = generation),
     hjust = 0, size = 3.5, fontface = "bold", family = "mono"
   ) +
   geom_text(
     data = generations,
-    aes(
-      x = bar_end, y = if_else(shade, 28, 26) - 0.7, label = workforce_end, color = generation,
-      hjust = if_else(bar_end - bar_start < 1500, 0, 1)
-    ),
-    size = 3.5, fontface = "bold", family = "mono"
+    aes(x = bar_end, y = bar_y - 0.7, label = retirement_year, color = generation),
+    hjust = 1, size = 3.5, fontface = "bold", family = "mono"
   ) +
   geom_segment(aes(x = start_date, xend = start_date, y = 0, yend = gdp_decline_pct, color = generation)) +
   geom_point(aes(x = start_date, y = gdp_decline_pct, color = generation), size = 3) +
@@ -65,12 +63,12 @@ p_timeline <- ggplot(recessions) +
   scale_fill_manual(values = c("TRUE" = "grey92", "FALSE" = "grey97")) +
   scale_color_manual(values = gen_colors) +
   scale_x_date(date_breaks = "10 years", date_labels = "%Y", expand = c(0, 0)) +
-  scale_y_continuous(limits = c(0, 32), breaks = seq(0, 25, 5), expand = c(0, 0)) +
+  scale_y_continuous(limits = c(0, 40), breaks = seq(0, 25, 5), expand = c(0, 0)) +
   coord_cartesian(clip = "off") +
   labs(
     x = "Recession start", y = "GDP decline, peak to trough (%)",
     title = "The recessions that shaped each generation's\nentry into the job market",
-    subtitle = "Shaded bands mark when each generation turned 22; bars mark when it turned 18"
+    subtitle = "Shaded bands mark when each generation turned 22; bars run from age 18 to full retirement age"
   ) +
   theme_minimal(base_size = 14) +
   theme(
@@ -78,7 +76,7 @@ p_timeline <- ggplot(recessions) +
     plot.margin = margin(5.5, 30, 5.5, 5.5)
   )
 
-ggsave("img/fig_recessions_timeline.png", p_timeline, width = 9, height = 6)
+ggsave("img/fig_recessions_timeline.png", p_timeline, width = 9, height = 6.5)
 
 # Lollipops grouped by generation, row height proportional to recession count
 p_generation <- ggplot(recessions, aes(x = gdp_decline_pct, y = fct_reorder(label, gdp_decline_pct), color = era)) +

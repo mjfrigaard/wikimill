@@ -36,6 +36,7 @@ flowchart TB
 #| label: clean-dating
 #| message: false
 #| collapse: true
+#| eval: true
 library(dplyr)
 library(readr)
 library(stringr)
@@ -56,6 +57,7 @@ dating_clean <- read_csv("data/dating_services.csv") |>
 ```{r}
 #| label: view-dating
 #| collapse: true
+#| eval: true
 write_csv(dating_clean, "data/dating_services_clean.csv")
 dating_clean
 ```
@@ -64,6 +66,7 @@ dating_clean
 
 ```{python}
 #| label: clean-dating-py
+#| eval: true
 import pandas as pd
 
 dating = pd.read_csv("data/dating_services.csv")
@@ -88,7 +91,7 @@ dating_clean.head()
 :::
 
 ::: {.callout-tip}
-## stringr has a slight edge
+## `stringr` has a slight edge
 
 Finding the year means removing each row's own user count from its text first. `str_remove()` is vectorized over the pattern, so one call handles every row. The `.str` methods in `pandas` take a single pattern for the whole column, so the Python version loops over the rows with `zip()`.
 :::

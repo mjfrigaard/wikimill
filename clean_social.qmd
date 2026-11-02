@@ -34,6 +34,7 @@ flowchart TB
 
 ```{r}
 #| label: clean-social
+#| eval: true
 #| message: false
 #| collapse: true
 library(dplyr)
@@ -60,6 +61,7 @@ social_clean <- read_csv("data/social_platforms.csv") |>
 
 ```{r}
 #| label: view-social
+#| eval: true
 #| collapse: true
 write_csv(social_clean, "data/social_platforms_clean.csv")
 social_clean
@@ -69,6 +71,7 @@ social_clean
 
 ```{python}
 #| label: clean-social-py
+#| eval: true
 import pandas as pd
 
 social = pd.read_csv("data/social_platforms.csv")

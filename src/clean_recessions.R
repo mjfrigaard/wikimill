@@ -22,8 +22,10 @@ generations <- tibble(
     shade = row_number() %% 2 == 0,
     workforce_start = birth_start + 18L,
     workforce_end = birth_end + 18L,
+    retirement_age = case_when(birth_end <= 1937 ~ 65L, birth_end <= 1954 ~ 66L, TRUE ~ 67L),
+    retirement_year = birth_end + retirement_age,
     bar_start = as.Date(paste0(pmax(workforce_start, 1944L), "-01-01")),
-    bar_end = as.Date(paste0(pmin(workforce_end, 2025L) + 1L, "-01-01")),
+    bar_end = as.Date(paste0(pmin(retirement_year, 2025L) + 1L, "-01-01")),
     generation = factor(generation, levels = generation),
     generation_label = factor(generation_label, levels = generation_label)
   )
